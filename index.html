@@ -6,119 +6,233 @@
     <title>Indraswara Galih Jayanegara</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>  
+<body>
+    <div class="bg-animation"></div>
+    
     <nav>
         <ul>
-            <li><a href="#aboutme">About Me</a></li>
+            <li><a href="#hero">Home</a></li>
             <li><a href="#education">Education</a></li>
+            <li><a href="#experience">Experience</a></li>
             <li><a href="#projects">Projects</a></li>
         </ul>
     </nav>
-    <section id="aboutme">
-        <picture>
-            <img src="./data/foto-twibbon.jpg" alt="profile picture" class="profile-picture">
-        </picture>
-        <div>
-            <h1>Trying to debug life, but getting stuck in an infinite loop of coffee and code.</h1>
-            <p>
-                Hi My Name is Indraswara Galih Jayanegara, I am an undergraduate
-                student at Bandung Institute of Technology. I am currently majoring 
-                in Informatics Engineering. I am interested in kernel development and
-                low-level programming. I am also interested in web development and
-                mobile development. I am currently learning about web development
-            </p>
+
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <img src="./data/foto-twibbon.jpg" alt="Indraswara Galih" class="profile-image">
+            <h1>Indraswara Galih Jayanegara</h1>
+            <p>Trying to debug life, but getting stuck in an infinite loop of coffee and code.</p>
+            <p>Informatics Engineering student at Bandung Institute of Technology with a passion for building secure, scalable software solutions. Focused on integrating security-first principles into every line of code to create applications that are both innovative and resilient against modern threats.</p>
+            <a href="#projects" class="cta-button">View My Work</a>
         </div>
     </section>
 
-
-    <section id = "education">
-        <h1>
-            My Education
-        </h1>
-        <ul>
-            <li>
-                <h2>SMAN 2 Surabay</svg>a</h2>
-                <h3>2018 - 2021</h3>
-            </li>
-            <li>
-                <h2>Electronic Engineering Polytechnic Institute of Surabaya (EEPIS)</h2>
-                <h3>2021 - 2022</h3>
-            </li>
-            <li>
-                <h2>Bandung Institute of Technology</h2>
-                <h3>2022 - Present</h3>
-            </li>
-        </ul>
-
-
-    </section>
-
-    <section id="projects">
-        <h1>My Projects</h1>
-        <div class="project-container">
-            <article class = "project-box">
-                <h2>OS-x86-lostonesweeping</h2>
-                <picture>
-                    <img src="data/os.png" alt="random image" class="project-picture">
-                </picture>
-                <p>
-                    This project is a kernel development project. The goal of this project
-                    is to create a simple operating system that can run on x86 architecture.
-                    This project is created using C and Assembly language.
-                </p>
-                <a href="https://github.com/Indraswara/os-2024-lostonesweeping" target="_blank"><button>Link To Project</button></a>
-            </article>
-            <article class = "project-box">
-                <h2>Wiki Racer</h2>
-                <picture>
-                    <img src="data/palurah.png" alt="random image" class="project-picture">
-                </picture>
-                <p>
-                    This project is a web development project. The goal of this project
-                    is to create a web application that can find the shortest path between
-                    two wikipedia pages. This project is created using Go, React, and Node.js
-                </p>
-                <a href="https://github.com/Indraswara/Tubes2_DinastiPakLurah" target="_blank"><button>Link To Project</button></a>
-            </article>
-            <article class = "project-box">
-                <h2>HTML-Cheker</h2>
-                <picture>
-                    <img src="data/checker.png" alt="random image" class="project-picture">
-                </picture>
-                <p>
-                    This project is to check the validity of an HTML file. This project is using pushdown automata to check the validity of the HTML file.
-                    This project is created using python
-                </p>
-                <a href="https://github.com/Indraswara/IF2124_HTML-Checker" target="_blank"><button>Link To Project</button></a>
-            </article>
-            <article class = "project-box">
-                <h2>Content-Based Information Retrieval</h2>
-                <picture>
-                    <img src="data/cibr.png" alt="random image" class="project-picture">
-                </picture>
-                <p>
-                    This project is web development project. The goal of this project is to find
-                    the most relevant image from an image input using content-based information retrieval.
-                    this project is using typescript and react.
-                </p>
-                <a href="https://github.com/Indraswara/Algeo02-22044" target="_blank"><button>Link To Project</button></a>
-            </article>
+    <section id="education" class="section">
+        <h2 class="section-title animate-on-scroll">Educational Journey</h2>
+        <div class="timeline">
+            <div class="timeline-item animate-on-scroll">
+                <div class="timeline-content">
+                    <h3>Bandung Institute of Technology</h3>
+                    <span>2022 - Present</span>
+                    <p>Currently pursuing Informatics Engineering, focusing on system programming and software development.</p>
+                </div>
+            </div>
+            <div class="timeline-item animate-on-scroll">
+                <div class="timeline-content">
+                    <h3>Electronic Engineering Polytechnic Institute of Surabaya</h3>
+                    <span>2021 - 2022 (dropout)</span>
+                    <p>Foundation in electronic engineering and computer systems.</p>
+                </div>
+            </div>
+            <div class="timeline-item animate-on-scroll">
+                <div class="timeline-content">
+                    <h3>SMAN 2 Surabaya</h3>
+                    <span>2018 - 2021</span>
+                    <p>High school education with strong foundation in mathematics and sciences.</p>
+                </div>
+            </div>
         </div>
     </section>
 
-    <footer id = "socmed">
-        <a href="https://github.com/Indraswara" target="_blank" rel="noopener noreferrer">
-            <img src="data/github-142-svgrepo-com.svg" alt="GitHub Profile" style="width: 30px; height: 30px; filter: invert(1);">
-        </a>
-        <a href="www.linkedin.com/in/indraswara-galih" target="_blank" rel="noopener noreferrer">
-            <img src="data/linkedin-svgrepo-com.svg" alt="GitHub Profile" style="width: 30px; height: 30px; filter: invert(1);">
-        </a>
-        <a href="https://codeforces.com/profile/AnotherA" target="_blank" rel="noopener noreferrer">
-            <img src="data/codeforces-svgrepo-com.svg" alt="GitHub Profile" style="width: 30px; height: 30px; filter: invert(1);">
-        </a>
-        <a href="https://leetcode.com/u/KiiroMahiro/" target="_blank" rel="noopener noreferrer">
-            <img src="data/leetcode-svgrepo-com.svg" alt="GitHub Profile" style="width: 30px; height: 30px; filter: invert(1);">
-        </a>
+    <section id="experience" class="section">
+        <h2 class="section-title animate-on-scroll">Experience</h2>
+        <div class="experience-grid">
+            <div class="experience-card animate-on-scroll">
+                <div class="experience-header">
+                    <h3>Laboratory Assistant</h3>
+                    <span class="company">Bandung Institute of Technology</span>
+                    <span class="duration">2023 - Present</span>
+                </div>
+                <div class="experience-content">
+                    <p>Supporting academic excellence in computer science education by assisting students with programming assignments, laboratory sessions, and technical projects. Mentoring junior students in low level kind software development.</p>
+                    <div class="experience-skills">
+                        <span class="skill-tag">Docker</span>
+                        <span class="skill-tag">Distributed System</span>
+                        <span class="skill-tag">Computer Network</span>
+                        <span class="skill-tag">Architecture of Computer</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experience-card animate-on-scroll">
+                <div class="experience-header">
+                    <h3>Security Engineer Intern</h3>
+                    <span class="company">PT Pena Teknologi Indonesia (MrScraper)</span>
+                    <span class="duration">Jun 2024 - Present</span>
+                </div>
+                <div class="experience-content">
+                    <p>Developed a mobile-based scraping architecture for both websites and applications. Designed and deployed a scalable data pipeline infrastructure leveraging Docker containerization and Redis caching to handle high-throughput workloads and minimize transfer latency.</p>
+                    <div class="experience-skills">
+                        <span class="skill-tag">Reverse Engineering</span>
+                        <span class="skill-tag">Code Review</span>
+                        <span class="skill-tag">Agile</span>
+                        <span class="skill-tag">Scraping</span>
+                        <span class="skill-tag">Docker</span>
+                        <span class="skill-tag">Security</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="experience-card animate-on-scroll">
+                <div class="experience-header">
+                    <h3>Fullstack Developer</h3>
+                    <span class="company">Pop Culture Enthusiast Club "Genshiken" ITB</span>
+                    <span class="duration">2023 - 2024</span>
+                </div>
+                <div class="experience-content">
+                    <p>Built a modern marketing website for Genshiken using Next.js and Tailwind CSS to showcase activities and attract new members to the organization.</p>
+                    <div class="experience-skills">
+                        <span class="skill-tag">Web Development</span>
+                        <span class="skill-tag">Team Work</span>
+                        <span class="skill-tag">NextJS</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="experience-card animate-on-scroll">
+                <div class="experience-header">
+                    <h3>Software Engineer</h3>
+                    <span class="company">IOM ITB</span>
+                    <span class="duration">Feb 2024 - May 2024</span>
+                </div>
+                <div class="experience-content">
+                    <p>Built a full-stack scholarship management system for IOM ITB leveraging Next.js frontend, PostgreSQL database, Docker containerization, and MinIO object storage for efficient application processing.</p>
+                    <div class="experience-skills">
+                        <span class="skill-tag">Agile</span>
+                        <span class="skill-tag">Web Development</span>
+                        <span class="skill-tag">Docker</span>
+                        <span class="skill-tag">Team Work</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="section">
+        <h2 class="section-title animate-on-scroll">Featured Projects</h2>
+        <div class="projects-grid">
+            <div class="project-card animate-on-scroll">
+                <h3>OS-x86-lostonesweeping</h3>
+                <p>A custom operating system kernel for x86 architecture, built from scratch using C and Assembly. Features basic process management, memory allocation, and hardware abstraction.</p>
+                <a href="https://github.com/Indraswara/os-2024-lostonesweeping" target="_blank" class="project-link">
+                    View Project →
+                </a>
+            </div>
+            
+            <div class="project-card animate-on-scroll">
+                <h3>Wiki Racer</h3>
+                <p>An intelligent web application that finds the shortest path between two Wikipedia pages using graph algorithms. Built with Go backend, React frontend, and Node.js middleware.</p>
+                <a href="https://github.com/Indraswara/Tubes2_DinastiPakLurah" target="_blank" class="project-link">
+                    View Project →
+                </a>
+            </div>
+            
+            <div class="project-card animate-on-scroll">
+                <h3>HTML Checker</h3>
+                <p>A sophisticated HTML validation tool using pushdown automata theory. Implements formal language concepts to verify HTML document structure and syntax correctness.</p>
+                <a href="https://github.com/Indraswara/IF2124_HTML-Checker" target="_blank" class="project-link">
+                    View Project →
+                </a>
+            </div>
+            
+            <div class="project-card animate-on-scroll">
+                <h3>Content-Based Image Retrieval</h3>
+                <p>Advanced image search system using computer vision and machine learning. Finds visually similar images based on content analysis rather than metadata.</p>
+                <a href="https://github.com/Indraswara/Algeo02-22044" target="_blank" class="project-link">
+                    View Project →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="social-footer">
+        <div class="social-links">
+            <a href="https://github.com/Indraswara" target="_blank" class="social-link" title="GitHub">
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"/>
+                </svg>
+            </a>
+            <a href="https://www.linkedin.com/in/indraswara-galih" target="_blank" class="social-link" title="LinkedIn">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.5 8C7.32843 8 8 7.32843 8 6.5C8 5.67157 7.32843 5 6.5 5C5.67157 5 5 5.67157 5 6.5C5 7.32843 5.67157 8 6.5 8Z"/>
+                    <path d="M5 10C5 9.44772 5.44772 9 6 9H7C7.55228 9 8 9.44771 8 10V18C8 18.5523 7.55228 19 7 19H6C5.44772 19 5 18.5523 5 18V10Z"/>
+                    <path d="M11 19H12C12.5523 19 13 18.5523 13 18V13.5C13 12 16 11 16 13V18.0004C16 18.5527 16.4477 19 17 19H18C18.5523 19 19 18.5523 19 18V12C19 10 17.5 9 15.5 9C13.5 9 13 10.5 13 10.5V10C13 9.44771 12.5523 9 12 9H11C10.4477 9 10 9.44772 10 10V18C10 18.5523 10.4477 19 11 19Z"/>
+                </svg>
+            </a>
+            <a href="https://codeforces.com/profile/AnotherA" target="_blank" class="social-link" title="Codeforces">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.5 7.5C5.328 7.5 6 8.172 6 9v10.5c0 .828-.672 1.5-1.5 1.5h-3C.673 21 0 20.328 0 19.5V9c0-.828.673-1.5 1.5-1.5h3zm9-4.5c.828 0 1.5.672 1.5 1.5v15c0 .828-.672 1.5-1.5 1.5h-3c-.827 0-1.5-.672-1.5-1.5v-15c0-.828.673-1.5 1.5-1.5h3zm9 7.5c.828 0 1.5.672 1.5 1.5v7.5c0 .828-.672 1.5-1.5 1.5h-3c-.828 0-1.5-.672-1.5-1.5V12c0-.828.672-1.5 1.5-1.5h3z"/>
+                </svg>
+            </a>
+            <a href="https://leetcode.com/u/KiiroMahiro/" target="_blank" class="social-link" title="LeetCode">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16.102 17.93l-2.697 2.607c-.466.467-1.111.662-1.823.662s-1.357-.195-1.824-.662l-4.332-4.363c-.467-.467-.702-1.15-.702-1.863s.235-1.357.702-1.824l4.319-4.38c.467-.467 1.125-.645 1.837-.645s1.357.195 1.823.662l2.697 2.606c.514.515 1.365.497 1.9-.038.535-.536.553-1.387.039-1.901l-2.609-2.636a5.055 5.055 0 0 0-2.445-1.337l2.467-2.503c.516-.514.498-1.366-.037-1.901-.535-.535-1.387-.552-1.902-.038l-10.1 10.101c-.981.982-1.494 2.337-1.494 3.835 0 1.498.513 2.895 1.494 3.875l4.347 4.361c.981.979 2.337 1.452 3.834 1.452s2.853-.512 3.835-1.494l2.609-2.637c.514-.514.496-1.365-.039-1.9s-1.386-.553-1.899-.039zM20.811 13.01H10.666c-.702 0-1.27.604-1.27 1.346s.568 1.346 1.27 1.346h10.145c.701 0 1.27-.604 1.27-1.346s-.569-1.346-1.27-1.346z"/>
+                </svg>
+            </a>
+        </div>
+        <p style="color: #666;">Built with passion and coffee.</p>
     </footer>
+
+    <script>
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.style.background = 'rgba(10, 10, 10, 0.95)';
+            } else {
+                nav.style.background = 'rgba(10, 10, 10, 0.8)';
+            }
+        });
+    </script>
 </body>
 </html>
