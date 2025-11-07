@@ -75,6 +75,69 @@ body {
   color: #555;
 }
 
+.contact-links {
+  margin-top: 32px;
+}
+
+.contact-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #999;
+}
+
+.contact-list {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  color: #333;
+  text-decoration: none;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.contact-link img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.contact-link:hover {
+  transform: translateY(-2px);
+  background-color: #333;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.contact-icon {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 /* Sections */
 .section-title {
   font-size: 20px;
