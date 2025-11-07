@@ -1,0 +1,32 @@
+<article>
+  <p>
+    Containers let you bundle an application, its runtime, and its dependencies into a portable unit.
+    Docker is the de-facto toolkit for building and running those containers, which means learning the
+    basics unlocks a workflow that behaves the same on your laptop, CI, or production.
+  </p>
+
+  <figure class="post-figure">
+    <img src="posts/images/docker-diagram.svg" alt="Diagram describing Dockerfile to image to container flow" />
+    <figcaption>A Dockerfile builds an image, and an image runs as a container.</figcaption>
+  </figure>
+
+  <h3>Core Concepts</h3>
+  <ul>
+    <li><strong>Image</strong> – the template that holds your filesystem and metadata.</li>
+    <li><strong>Container</strong> – a running instance of an image.</li>
+    <li><strong>Registry</strong> – where images live so they can be shared.</li>
+  </ul>
+
+  <h3>Quick Start</h3>
+  <ol>
+    <li>Install Docker Desktop or the Docker Engine package for your OS.</li>
+    <li>Create a <code>Dockerfile</code> that describes how to build your image.</li>
+    <li>Run <code>docker build -t my-app .</code> to create the image.</li>
+    <li>Start a container with <code>docker run --rm -p 8080:80 my-app</code>.</li>
+  </ol>
+
+  <p>
+    From here you can add multi-stage builds, use docker-compose for multi-service apps, and publish
+    images to registries such as Docker Hub or GHCR.
+  </p>
+</article>

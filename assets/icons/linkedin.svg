@@ -1,0 +1,5 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="4" fill="#0a66c2"/>
+  <text x="11" y="22" font-family="'Courier New', monospace" font-size="14" fill="#fff">in</text>
+  <rect x="6" y="12" width="2" height="10" fill="#fff" rx="1"/>
+</svg>

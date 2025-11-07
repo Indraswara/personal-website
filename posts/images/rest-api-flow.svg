@@ -1,0 +1,20 @@
+<svg width="640" height="320" viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="320" fill="#fff8f0"/>
+  <rect x="80" y="80" width="140" height="140" rx="12" fill="#d97706"/>
+  <text x="150" y="155" text-anchor="middle" font-family="monospace" font-size="16" fill="#fff">Client</text>
+  <rect x="420" y="80" width="140" height="140" rx="12" fill="#0f172a"/>
+  <text x="490" y="140" text-anchor="middle" font-family="monospace" font-size="16" fill="#f8fafc">REST API</text>
+  <text x="490" y="170" text-anchor="middle" font-family="monospace" font-size="12" fill="#cbd5f5">/posts/42</text>
+  <path d="M220 150h180" stroke="#d97706" stroke-width="6" marker-end="url(#arrowRest)"/>
+  <path d="M400 170h-180" stroke="#0f172a" stroke-width="6" marker-end="url(#arrowRestBack)"/>
+  <text x="310" y="140" text-anchor="middle" font-family="monospace" font-size="12" fill="#a16207">GET</text>
+  <text x="310" y="190" text-anchor="middle" font-family="monospace" font-size="12" fill="#0f172a">200 OK</text>
+  <defs>
+    <marker id="arrowRest" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#d97706" />
+    </marker>
+    <marker id="arrowRestBack" markerWidth="10" markerHeight="10" refX="1" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,3 L9,0 L9,6 z" fill="#0f172a" />
+    </marker>
+  </defs>
+</svg>
