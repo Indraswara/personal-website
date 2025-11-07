@@ -41,10 +41,12 @@ function renderHome() {
     ? window.HOME_CONTENT.intro
     : ["Welcome to my personal website."])
   const introMarkup = homeCopy.map((text) => `<p>${text}</p>`).join("")
+  const contactMarkup = renderContactLinks()
   app.innerHTML = `
     <div class="home">
       <div class="home-text">
         ${introMarkup}
+        ${contactMarkup}
       </div>
     </div>
   `
@@ -204,6 +206,38 @@ function renderTags(tags = []) {
   return `
     <div class="item-tags">
       ${tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
+    </div>
+  `
+}
+
+function renderContactLinks() {
+  const contacts = ((window.CONTACTS || window.CONTACT_LINKS || [])).filter((contact) => contact && contact.url)
+  if (contacts.length === 0) {
+    return ""
+  }
+
+  const linksMarkup = contacts
+    .map((contact) => {
+      const target = contact.url.startsWith("mailto:") ? "_self" : "_blank"
+      const relAttr = target === "_blank" ? ' rel="noopener noreferrer"' : ""
+      const label = contact.label || contact.id || "Contact"
+      const iconText = contact.icon || (contact.label ? contact.label.charAt(0) : "")
+      const iconMarkup = contact.iconPath
+        ? `<img src="${contact.iconPath}" alt="" aria-hidden="true" />`
+        : `<span class="contact-icon" aria-hidden="true">${iconText}</span>`
+      return `
+        <a class="contact-link" href="${contact.url}" target="${target}"${relAttr} aria-label="${label}">
+          ${iconMarkup}
+          <span class="sr-only">${contact.label}</span>
+        </a>
+      `
+    })
+    .join("")
+
+  return `
+    <div class="contact-links">
+      <div class="contact-title">Connect</div>
+      <div class="contact-list">${linksMarkup}</div>
     </div>
   `
 }

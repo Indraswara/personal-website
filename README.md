@@ -15,7 +15,10 @@ section has its own data file so you can edit content without touching the rende
 │   ├── experience.js           # Timeline items for Experience
 │   ├── projects.js             # Project cards + links
 │   ├── education.js            # Education timeline
+│   ├── contact.js              # Social/icon links
 │   └── posts.js                # Metadata for blog posts
+├── assets/
+│   └── icons/                  # SVG badges used by the contact row
 └── posts/
     ├── images/                 # SVG/PNG assets referenced by posts
     ├── post-template.html      # Boilerplate for new posts
@@ -47,6 +50,23 @@ window.HOME_CONTENT = {
   ],
 }
 ```
+
+## Managing Contact Links
+
+1. Open `content/contact.js`.
+2. Each entry in `window.CONTACT_LINKS` represents one icon in the “Connect” row on the home page.
+
+```js
+{
+  id: "github",
+  label: "GitHub",
+  url: "https://github.com/indraswara",
+  iconPath: "assets/icons/github.svg", // optional custom SVG
+}
+```
+
+- Use `iconPath` to point at any SVG in `assets/icons/` (add more files as needed).
+- Leave out an entry to hide that platform entirely.
 
 ## Updating Experience / Education
 

@@ -6,11 +6,4 @@ window.PROJECT_ITEMS = [
     tags: ["HTML", "CSS", "JavaScript", "Docker"],
     link: "https://github.com/indraswara/personal-website",
   },
-  {
-    title: "Open Source Contribution",
-    date: "2023",
-    description: "Contributed to various open source projects.",
-    tags: ["GitHub", "JavaScript"],
-    link: "https://github.com/indraswara",
-  },
 ]
