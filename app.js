@@ -1,70 +1,60 @@
-// Data declaration
-const DATA = {
-  experience: [
-    { title: "Job 1", date: "2018-2020", description: "Description of job 1", tags: ["tag1", "tag2"] },
-    { title: "Job 2", date: "2020-2022", description: "Description of job 2", tags: ["tag3"] },
-  ],
-  project: [
-    { title: "Project 1", date: "2019", description: "Description of project 1", tags: ["tag1"] },
-    { title: "Project 2", date: "2021", description: "Description of project 2", tags: ["tag2", "tag3"] },
-  ],
-  post: [
-    { title: "Post 1", date: "2020", description: "Description of post 1", tags: ["tag1"] },
-    { title: "Post 2", date: "2022", description: "Description of post 2", tags: ["tag2"] },
-  ],
-  education: [
-    { title: "Education 1", date: "2015-2018", description: "Description of education 1", tags: ["tag1"] },
-    { title: "Education 2", date: "2018-2020", description: "Description of education 2", tags: ["tag2", "tag3"] },
-  ],
+const ROUTABLE_SECTIONS = new Set(["experience", "project", "education"])
+const postTemplateCache = new Map()
+
+function navigateTo(route = "") {
+  window.location.hash = `#/${route}`
 }
 
-// Router handler
-function navigateTo(page) {
-  window.location.hash = `#/${page}`
+function capitalize(str) {
+  if (!str) return ""
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-// Page renderer
-function renderPage() {
-  const hash = window.location.hash.slice(2) || ""
-  const app = document.getElementById("app")
+function formatDisplayDate(dateString) {
+  if (!dateString) {
+    return ""
+  }
+  const parsed = new Date(dateString)
+  if (Number.isNaN(parsed.getTime())) {
+    return dateString
+  }
+  return parsed.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+}
 
-  // Update active nav links
+function setActiveNav(route) {
+  const normalizedRoute = route || ""
   document.querySelectorAll(".nav-link").forEach((link) => {
-    link.classList.remove("active")
     const href = link.getAttribute("href").slice(2)
-    if (href === hash) {
+    if (href === normalizedRoute || (!normalizedRoute && href === "")) {
       link.classList.add("active")
+    } else if (normalizedRoute === "post" && href === "post") {
+      link.classList.add("active")
+    } else {
+      link.classList.remove("active")
     }
   })
-
-  // Render content based on route
-  if (hash === "" || hash === "/") {
-    app.innerHTML = `
-            <div class="home">
-                <div class="home-text">
-                    <p>Hello, you just came to my personal website, My name is Indraswara, you can call me indra</p>
-                </div>
-            </div>
-        `
-  } else if (hash === "experience") {
-    renderSection("experience")
-  } else if (hash === "project") {
-    renderSection("project")
-  } else if (hash === "post") {
-    renderSection("post")
-  } else if (hash === "education") {
-    renderSection("education")
-  } else {
-    app.innerHTML = '<div class="empty-state">Page not found</div>'
-  }
 }
 
-// Render section with items
+function renderHome() {
+  const app = document.getElementById("app")
+  const homeCopy = (window.HOME_CONTENT && Array.isArray(window.HOME_CONTENT.intro) && window.HOME_CONTENT.intro.length
+    ? window.HOME_CONTENT.intro
+    : ["Welcome to my personal website."])
+  const introMarkup = homeCopy.map((text) => `<p>${text}</p>`).join("")
+  app.innerHTML = `
+    <div class="home">
+      <div class="home-text">
+        ${introMarkup}
+      </div>
+    </div>
+  `
+}
+
 function renderSection(sectionName) {
   const app = document.getElementById("app")
-  const items = DATA[sectionName] || []
+  const items = (SITE_DATA && SITE_DATA[sectionName]) || []
 
-  let html = `<h2 class="section-title">${capitalize(sectionName)}</h2>`
+  let html = `<div class="section"><h2 class="section-title">${capitalize(sectionName)}</h2>`
 
   if (items.length === 0) {
     html += '<div class="empty-state">No items yet</div>'
@@ -72,35 +62,210 @@ function renderSection(sectionName) {
     html += '<div class="items-list">'
     items.forEach((item) => {
       html += `
-                <div class="item">
-                    <div class="item-title">${item.title}</div>
-                    ${item.date ? `<div class="item-meta">${item.date}</div>` : ""}
-                    ${item.description ? `<div class="item-description">${item.description}</div>` : ""}
-                    ${
-                      item.tags && item.tags.length > 0
-                        ? `
-                        <div class="item-tags">
-                            ${item.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
-                        </div>
-                    `
-                        : ""
-                    }
-                </div>
-            `
+        <div class="item">
+          <div class="item-header">
+            <div class="item-title">${item.title}</div>
+            ${item.date ? `<div class="item-date">${item.date}</div>` : ""}
+          </div>
+          ${item.description ? `<div class="item-description">${item.description}</div>` : ""}
+          ${renderTags(item.tags)}
+          ${renderItemActions(sectionName, item)}
+        </div>
+      `
     })
     html += "</div>"
   }
 
+  html += "</div>"
   app.innerHTML = html
 }
 
-// Utility
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+function renderPostList() {
+  const app = document.getElementById("app")
+  let html = '<div class="section"><h2 class="section-title">Posts</h2>'
+
+  if (!POSTS || POSTS.length === 0) {
+    html += '<div class="empty-state">No posts yet</div>'
+  } else {
+    html += '<div class="items-list">'
+    POSTS.forEach((post) => {
+      const dateMarkup = post.date ? `<div class="item-date">${formatDisplayDate(post.date)}</div>` : ""
+      html += `
+        <div class="item post-excerpt">
+          <div class="item-header">
+            <div class="item-title">${post.title}</div>
+            ${dateMarkup}
+          </div>
+          ${post.description ? `<div class="item-description">${post.description}</div>` : ""}
+          ${renderTags(post.tags)}
+          <div>
+            <button class="btn" data-route="post/${post.slug}">Read Post</button>
+          </div>
+        </div>
+      `
+    })
+    html += "</div>"
+  }
+
+  html += "</div>"
+  app.innerHTML = html
 }
 
-// Initialize router
-window.addEventListener("hashchange", renderPage)
+async function renderPostDetail(slug) {
+  const app = document.getElementById("app")
+  const post = POSTS.find((entry) => entry.slug === slug)
+
+  if (!post) {
+    renderNotFound("Post not found")
+    return
+  }
+
+  app.innerHTML = `
+    <div class="section post-detail">
+      <div class="post-header">
+        <h2 class="section-title">${post.title}</h2>
+        <div class="post-meta">
+          ${post.date ? `<span>${formatDisplayDate(post.date)}</span>` : ""}
+          ${post.date && post.tags && post.tags.length ? "<span>•</span>" : ""}
+          ${post.tags && post.tags.length ? `<span>${post.tags.join(", ")}</span>` : ""}
+        </div>
+      </div>
+      <article class="post-content">Loading post...</article>
+      <div class="post-actions">
+        <button class="btn secondary" data-route="post">← Back to posts</button>
+      </div>
+    </div>
+  `
+
+  const postContentElement = app.querySelector(".post-content")
+
+  try {
+    const content = await loadPostContent(post)
+    postContentElement.innerHTML = content
+  } catch (error) {
+    postContentElement.innerHTML = '<p class="empty-state">Unable to load this post right now. Please try again later.</p>'
+    console.error(error)
+  }
+}
+
+function loadPostContent(post) {
+  if (!post || !post.contentPath) {
+    return Promise.reject(new Error("Post has no content path"))
+  }
+
+  if (postTemplateCache.has(post.slug)) {
+    return Promise.resolve(postTemplateCache.get(post.slug))
+  }
+
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement("iframe")
+    iframe.style.display = "none"
+    iframe.setAttribute("aria-hidden", "true")
+    iframe.src = post.contentPath
+
+    const cleanup = () => {
+      iframe.remove()
+    }
+
+    iframe.onload = () => {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document
+        const articleHtml = (doc && doc.body) ? doc.body.innerHTML.trim() : ""
+        if (!articleHtml) {
+          throw new Error("Post template is empty")
+        }
+        postTemplateCache.set(post.slug, articleHtml)
+        cleanup()
+        resolve(articleHtml)
+      } catch (err) {
+        cleanup()
+        reject(err)
+      }
+    }
+
+    iframe.onerror = () => {
+      cleanup()
+      reject(new Error(`Unable to load template: ${post.contentPath}`))
+    }
+
+    document.body.appendChild(iframe)
+  })
+}
+
+function renderNotFound(message = "Page not found") {
+  const app = document.getElementById("app")
+  app.innerHTML = `<div class="empty-state">${message}</div>`
+}
+
+function renderTags(tags = []) {
+  if (!tags || tags.length === 0) {
+    return ""
+  }
+  return `
+    <div class="item-tags">
+      ${tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
+    </div>
+  `
+}
+
+function renderItemActions(sectionName, item = {}) {
+  if (sectionName !== "project" || !item.link) {
+    return ""
+  }
+
+  const safeLink = item.link
+  return `
+    <div class="item-actions">
+      <a class="btn" href="${safeLink}" target="_blank" rel="noopener noreferrer">View Project</a>
+    </div>
+  `
+}
+
+async function renderPage() {
+  const rawHash = window.location.hash.startsWith("#/") ? window.location.hash.slice(2) : ""
+  const segments = rawHash.split("/").filter(Boolean)
+  const section = segments[0] || ""
+  const slug = segments[1]
+
+  setActiveNav(section)
+
+  if (!section) {
+    renderHome()
+    return
+  }
+
+  if (ROUTABLE_SECTIONS.has(section)) {
+    renderSection(section)
+    return
+  }
+
+  if (section === "post") {
+    if (slug) {
+      await renderPostDetail(slug)
+    } else {
+      renderPostList()
+    }
+    return
+  }
+
+  renderNotFound()
+}
+
+document.addEventListener("click", (event) => {
+  const routeTarget = event.target.closest("[data-route]")
+  if (routeTarget) {
+    event.preventDefault()
+    const route = routeTarget.getAttribute("data-route")
+    if (route !== null) {
+      navigateTo(route)
+    }
+  }
+})
+
+window.addEventListener("hashchange", () => {
+  renderPage()
+})
+
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.location.hash) {
     window.location.hash = "#/"

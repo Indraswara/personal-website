@@ -1,0 +1,17 @@
+<svg width="640" height="320" viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="320" fill="#f0f6ff"/>
+  <rect x="60" y="60" width="160" height="160" rx="8" fill="#4e7ad9"/>
+  <text x="140" y="135" text-anchor="middle" font-family="monospace" font-size="16" fill="#fff">Dockerfile</text>
+  <text x="140" y="165" text-anchor="middle" font-family="monospace" font-size="12" fill="#dfe7ff">FROM node:18</text>
+  <rect x="260" y="60" width="160" height="160" rx="8" fill="#1f2a44"/>
+  <text x="340" y="130" text-anchor="middle" font-family="monospace" font-size="18" fill="#fff">Image</text>
+  <rect x="460" y="60" width="120" height="160" rx="8" fill="#1f8844"/>
+  <text x="520" y="135" text-anchor="middle" font-family="monospace" font-size="18" fill="#fff">Container</text>
+  <path d="M220 140h40" stroke="#4e7ad9" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M420 140h30" stroke="#1f8844" stroke-width="4" marker-end="url(#arrow)"/>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#1f2a44" />
+    </marker>
+  </defs>
+</svg>

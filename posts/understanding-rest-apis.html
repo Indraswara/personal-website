@@ -1,0 +1,29 @@
+<article>
+  <p>
+    REST (Representational State Transfer) is a set of constraints for designing networked APIs. Instead
+    of inventing custom verbs, you use HTTP methods (GET, POST, PUT, PATCH, DELETE) and descriptive URLs to
+    communicate intent.
+  </p>
+
+  <figure class="post-figure">
+    <img src="posts/images/rest-api-flow.svg" alt="Arrows showing a client sending GET and receiving 200 OK" />
+    <figcaption>Clients send HTTP verbs, servers answer with resources plus status codes.</figcaption>
+  </figure>
+
+  <h3>Design Checklist</h3>
+  <ul>
+    <li>Identify resources first (e.g., <code>/posts</code>, <code>/posts/:id/comments</code>).</li>
+    <li>Rely on HTTP status codes to communicate success and errors.</li>
+    <li>Return consistent JSON shapes and include hyperlinks (HATEOAS) when useful.</li>
+    <li>Document versioning and authentication early.</li>
+  </ul>
+
+  <h3>Example Request</h3>
+  <pre><code>GET /posts/42
+Accept: application/json
+  </code></pre>
+  <p>
+    A clean JSON response with the post body, author, and links to related resources makes it easy for
+    clients to navigate your API without surprises.
+  </p>
+</article>
