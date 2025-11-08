@@ -18,9 +18,9 @@ services:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.routers.personal-website-redirect.middlewares=redirect-to-https@docker"
     networks:
-      - traefik-network
+      - traefik_default
     restart: unless-stopped
 
 networks:
-  traefik-network:
+  traefik_default:
     external: true
