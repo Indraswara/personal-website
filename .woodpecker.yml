@@ -1,7 +1,4 @@
 # .woodpecker.yml
-# Automated deployment for personal-website on same VPS
-# Compatible with Woodpecker >= 2.8
-
 steps:
   deploy:
     image: alpine:3.20
@@ -12,7 +9,7 @@ steps:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/ego/app/personal-website:/srv/personal-website
     commands:
-      - echo "🚀 Deploying personal-website on indraswara.me"
+      - echo "Deploying personal-website on indraswara.me"
       - cd $PROJECT_PATH
       - git pull origin main
       - docker compose pull
