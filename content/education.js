@@ -1,6 +1,6 @@
 window.EDUCATION_ITEMS = [
   {
-    title: "Bachelor of Computer Science",
+    title: "Bandung Institute of Technology (ITB)",
     date: "2022 - 2026",
     description: "Currently pursuing a Bachelor's degree in Computer Science at ITB.",
     tags: ["Computer Science", "University"],
