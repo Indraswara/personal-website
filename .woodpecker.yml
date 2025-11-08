@@ -1,0 +1,20 @@
+# .woodpecker.yml
+# Woodpecker pipeline for indraswara.me (same host)
+pipeline:
+  deploy:
+    image: docker:27-dind
+    privileged: true
+    when:
+      branch: main
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ego/app/personal-website:/srv/personal-website
+    commands:
+      - echo "Deploying website to indraswara.me"
+      - cd /srv/personal-website
+      - git pull origin main
+      - docker compose pull
+      - docker compose up -d --remove-orphans
+      - docker system prune -f
