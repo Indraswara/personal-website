@@ -1,4 +1,9 @@
 # .woodpecker.yml
+# Auto-deploy personal-website on same VPS
+when:
+  event: [ push ]
+  branch: [ main ]
+
 steps:
   deploy:
     image: alpine:3.20
@@ -9,11 +14,10 @@ steps:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/ego/app/personal-website:/srv/personal-website
     commands:
-      - echo "Deploying personal-website on indraswara.me"
-      - cd $PROJECT_PATH
+      - echo "🚀 Deploying personal-website on indraswara.me"
+      - apk add --no-cache git docker-cli
+      - cd "$PROJECT_PATH"
       - git pull origin main
       - docker compose pull
       - docker compose up -d --remove-orphans
       - docker system prune -f
-    when:
-      branch: main
