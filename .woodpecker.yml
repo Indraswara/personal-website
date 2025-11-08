@@ -1,20 +1,22 @@
 # .woodpecker.yml
-# Woodpecker pipeline for indraswara.me (same host)
-pipeline:
+# Automated deployment for personal-website on same VPS
+# Compatible with Woodpecker >= 2.8
+
+steps:
   deploy:
-    image: docker:27-dind
-    privileged: true
-    when:
-      branch: main
+    image: alpine:3.20
     environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock
+      DOCKER_HOST: unix:///var/run/docker.sock
+      PROJECT_PATH: /srv/personal-website
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/ego/app/personal-website:/srv/personal-website
     commands:
-      - echo "Deploying website to indraswara.me"
-      - cd /srv/personal-website
+      - echo "🚀 Deploying personal-website on indraswara.me"
+      - cd $PROJECT_PATH
       - git pull origin main
       - docker compose pull
       - docker compose up -d --remove-orphans
       - docker system prune -f
+    when:
+      branch: main
