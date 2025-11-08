@@ -1,5 +1,5 @@
 # .woodpecker.yml
-# Auto-deploy personal-website on same VPS
+
 when:
   event: [ push, manual ]
   branch: [ main ]
@@ -17,6 +17,7 @@ steps:
       - echo "Deploying personal-website on indraswara.me"
       - apk add --no-cache git docker-cli
       - cd "$PROJECT_PATH"
+      - git config --global --add safe.directory /srv/personal-website
       - git pull origin main
       - docker compose pull
       - docker compose up -d --remove-orphans
