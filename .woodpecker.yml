@@ -15,10 +15,9 @@ steps:
       - /home/ego/app/personal-website:/srv/personal-website
     commands:
       - echo "Deploying personal-website on indraswara.me"
-      - apk add --no-cache git docker-cli
+      - apk add --no-cache git docker-cli docker-compose
       - cd "$PROJECT_PATH"
       - git config --global --add safe.directory /srv/personal-website
       - git pull origin main
-      - docker compose down -v
-      - docker compose up -d --remove-orphans
-      - docker system prune -f
+      - docker-compose down -v
+      - docker-compose up -d --remove-orphans
