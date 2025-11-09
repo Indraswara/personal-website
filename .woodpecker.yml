@@ -1,8 +1,7 @@
 # .woodpecker.yml
-
 when:
   event: [ push, manual ]
-  branch: [ main ]
+  branch: main
 steps:
   deploy:
     image: alpine:3.20
