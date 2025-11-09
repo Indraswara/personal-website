@@ -2,6 +2,7 @@
 when:
   event: [ push, manual ]
   branch: main
+
 steps:
   deploy:
     image: alpine:3.20
