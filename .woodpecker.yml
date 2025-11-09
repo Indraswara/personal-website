@@ -1,10 +1,8 @@
 # .woodpecker.yml
-
 when:
   event: [ push, manual, pull_request ]
-  branch: 
-    - main
-    - ${CI_COMMIT_TARGET_BRANCH}
+  branch: main
+
 steps:
   deploy:
     image: alpine:3.20
@@ -24,9 +22,3 @@ steps:
       - git pull origin main
       - docker-compose down -v
       - docker-compose -f docker-compose.prod.yml up -d --build
-    when:
-      - event: push
-        branch: main
-      - event: pull_request
-        branch: main
-      - event: manual
