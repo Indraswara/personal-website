@@ -5,14 +5,14 @@ services:
     build: .
     container_name: personal-website-prod
     expose:
-      - 8079
+      - 8070
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.personal-website-prod.rule=Host(`indraswara.me`)"
       - "traefik.http.routers.personal-website-prod.entrypoints=websecure"
       - "traefik.http.routers.personal-website-prod.tls.certresolver=letsencrypt"
       - "traefik.http.routers.personal-website-prod.tls=true"
-      - "traefik.http.services.personal-website-prod.loadbalancer.server.port=8079"
+      - "traefik.http.services.personal-website-prod.loadbalancer.server.port=8070"
       - "traefik.http.routers.personal-website-redirect.rule=Host(`indraswara.me`)"
       - "traefik.http.routers.personal-website-redirect.entrypoints=web"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
