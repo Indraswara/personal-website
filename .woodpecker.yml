@@ -1,43 +1,24 @@
-# Woodpecker CI/CD for writeups.indraswara.me
-# Simple, working configuration with git pull and docker compose deploy
+# .woodpecker.yml
 
-clone:
-  depth: 1
-
+when:
+  event: [ push, manual ]
+  branch: [ main ]
 steps:
   deploy:
-    image: docker:cli
+    image: alpine:3.20
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      PROJECT_PATH: /srv/personal-website
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      branch: main
-      event:
-        - push
-        - manual
+      - /home/ego/app/personal-website:/srv/personal-website
     commands:
-      - if [ -d ".git" ]; then git fetch origin main && git reset --hard origin/main; else rm -rf ./* && git clone --depth=1 -b main https://github.com/Indraswara/writeups.git .; fi
-      - docker compose -f docker-compose.yml pull || true
-      - docker compose -f docker-compose.yml up -d --build --remove-orphans
-      - docker system prune -f
-
-  healthcheck:
-    image: alpine/curl
-    depends_on:
-      - deploy
-    when:
-      branch: main
-      event:
-        - push
-        - manual
-    commands:
-      - curl -sSf https://writeups.indraswara.me > /dev/null
-
-  cleanup:
-    image: alpine
-    when:
-      event:
-        - manual
-    commands:
-      - docker system prune -af
-      - docker volume prune -f
-      - docker network prune -f
+      - echo "Deploying personal-website on indraswara.me"
+      - apk add --no-cache git docker-cli docker-compose
+      - cd "$PROJECT_PATH"
+      - git config --global --add safe.directory /srv/personal-website
+      - git reset --hard HEAD
+      - git clean -fd
+      - git pull origin main
+      - docker-compose down -v
+      - docker-compose -f docker-compose.prod.yml up -d --build
