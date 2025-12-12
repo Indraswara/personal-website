@@ -10,10 +10,11 @@ steps:
       DOCKER_HOST: unix:///var/run/docker.sock
       PROJECT_PATH: /srv/personal-website
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - /home/ego/app/websites/personal-website:/home/ego/app/websites/personal-website
     commands:
       - echo "Deploying personal-website on indraswara.me"
-      - apk add --no-cache git
+      - apk add --no-cache git docker-cli docker-cli-compose
       - cd /home/ego/app/websites/personal-website
       - git config --global --add safe.directory /home/ego/app/websites/personal-website
       - git fetch --all
