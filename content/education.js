@@ -1,3 +1,5 @@
+// Education entries, newest first.
+// Schema: { title, date, description, tags: [] }
 window.EDUCATION_ITEMS = [
   {
     title: "Bandung Institute of Technology (ITB)",

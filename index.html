@@ -3,25 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indra's Personal Website</title>
+    <meta name="description" content="Indraswara - Computer Science student at ITB, Security Engineer, and Developer">
+    <meta name="theme-color" content="#f5f5f5">
+    <title>Indraswara</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <nav class="navbar">
-            <div class="nav-brand">Indraswara</div>
-            <ul class="nav-menu">
-                <li><a href="#/" class="nav-link">Home</a></li>
-                <li><a href="#/experience" class="nav-link">Experience</a></li>
-                <li><a href="#/project" class="nav-link">Project</a></li>
-                <li><a href="#/post" class="nav-link">Post</a></li>
-                <li><a href="#/education" class="nav-link">Education</a></li>
-            </ul>
+            <a href="#/" class="nav-brand">Indraswara</a>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="hamburger"></span>
+            </button>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="#/" class="nav-link">Home</a></li>
+                    <li><a href="#/experience" class="nav-link">Experience</a></li>
+                    <li><a href="#/project" class="nav-link">Projects</a></li>
+                    <li><a href="#/post" class="nav-link">Posts</a></li>
+                    <li><a href="#/ctf" class="nav-link">CTF</a></li>
+                    <li><a href="#/education" class="nav-link">Education</a></li>
+                </ul>
+                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <span class="theme-icon"></span>
+                </button>
+            </div>
         </nav>
+        <div class="nav-overlay"></div>
 
         <main id="app" class="content">
-            <!-- Content will be rendered here -->
+            <!-- Content rendered here by app.js -->
         </main>
+
+        <footer class="footer">
+            <p>&copy; 2026 Indraswara</p>
+        </footer>
     </div>
 
     <script src="content/home.js"></script>
@@ -29,6 +45,7 @@
     <script src="content/projects.js"></script>
     <script src="content/education.js"></script>
     <script src="content/posts.js"></script>
+    <script src="content/ctf.js"></script>
     <script src="content/contact.js"></script>
     <script src="data.js"></script>
     <script src="app.js"></script>

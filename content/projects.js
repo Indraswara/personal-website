@@ -1,3 +1,5 @@
+// Project entries. Add link to show a "View Project" button.
+// Schema: { title, date, description, tags: [], link (optional) }
 window.PROJECT_ITEMS = [
   {
     title: "Personal Website",

@@ -1,3 +1,5 @@
+// Experience entries, newest first.
+// Schema: { title, date, description, tags: [] }
 window.EXPERIENCE_ITEMS = [
   {
     title: "Security Engineer",
