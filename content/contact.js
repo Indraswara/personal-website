@@ -1,3 +1,6 @@
+// Contact/social links shown on the home page.
+// Schema: { id, label, url, iconPath }
+// Icons go in assets/icons/ as SVGs.
 window.CONTACT_LINKS = [
   {
     id: "github",
