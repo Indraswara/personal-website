@@ -19,4 +19,4 @@ steps:
       - git config --global --add safe.directory /home/ego/app/websites/personal-website
       - git fetch --all
       - git reset --hard origin/main
-      - docker compose -f docker-compose.prod.yml up -d --build
+      - docker compose -f prod.yml up -d --build
