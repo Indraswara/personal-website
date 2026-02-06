@@ -15,7 +15,7 @@ steps:
     commands:
       - echo "Deploying personal-website on indraswara.me"
       - apk add --no-cache git docker-cli docker-cli-compose
-      - cd /home/ego/app/websites/personal-website
+      - cd /opt/websites/personal-website
       - git config --global --add safe.directory /opt/websites/personal-website
       - git fetch --all
       - git reset --hard origin/main
