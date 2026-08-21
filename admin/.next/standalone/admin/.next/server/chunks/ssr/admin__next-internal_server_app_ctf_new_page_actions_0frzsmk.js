@@ -1,3 +1,0 @@
-module.exports=[57937,a=>a.a(async(b,c)=>{try{var d=a.i(48658);a.i(76801);var e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),36595,a=>a.a(async(b,c)=>{try{var d=a.i(57937),e=a.i(48658),f=a.i(76801),g=b([d,e]);[d,e]=g.then?(await g)():g,a.s(["40ae2845121a6b59703ce4efff36ed39e284363c5d",()=>e.renderPreview,"7009540fe834af564e986fb35775d2f1792daaf149",()=>f.saveCtf]),c()}catch(a){c(a)}},!1)];
-
-//# sourceMappingURL=admin__next-internal_server_app_ctf_new_page_actions_0frzsmk.js.map

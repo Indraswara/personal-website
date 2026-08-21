@@ -1,3 +1,0 @@
-module.exports=[93906,a=>a.a(async(b,c)=>{try{var d=a.i(48658);a.i(76801);var e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),78450,a=>a.a(async(b,c)=>{try{var d=a.i(93906),e=a.i(48658),f=a.i(76801),g=b([d,e]);[d,e]=g.then?(await g)():g,a.s(["40ae2845121a6b59703ce4efff36ed39e284363c5d",()=>e.renderPreview,"40c90a60f73ecf8c90ae5a1541d48b7db07d324819",()=>f.removeCtf,"7009540fe834af564e986fb35775d2f1792daaf149",()=>f.saveCtf]),c()}catch(a){c(a)}},!1)];
-
-//# sourceMappingURL=admin__next-internal_server_app_ctf_%5Bslug%5D_page_actions_0ct1muz.js.map
