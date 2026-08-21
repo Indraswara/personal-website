@@ -250,6 +250,16 @@
         "Go"
       ],
       "repo": "https://github.com/Indraswara/personal-website"
+    },
+    {
+      "slug": "test-playwright-project",
+      "title": "Test Playwright Project",
+      "date": "2026",
+      "description": "A test project added via Playwright to verify the addProject action.",
+      "tags": [
+        "test",
+        "playwright"
+      ]
     }
   ]
 }
