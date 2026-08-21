@@ -34,6 +34,9 @@ services:
       - ./site/content/ctf:/app/site/content/ctf:ro
       - ./content/registry.json:/app/site/content/registry.json:ro
       - ./content/site-data.json:/app/site/content/site-data.json:ro
+      # Admin's image uploads (lib/actions.ts uploadImage) land here — without
+      # this mount they'd 404 on the live site until the next full rebuild.
+      - ./site/public/posts/images:/app/site/public/posts/images:ro
     networks:
       - edge
     deploy:

@@ -10,6 +10,13 @@
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.1",
+    "@tiptap/extension-bubble-menu": "^3.30.2",
+    "@tiptap/extension-floating-menu": "^3.30.2",
+    "@tiptap/extension-image": "^3.30.2",
+    "@tiptap/extension-placeholder": "^3.30.2",
+    "@tiptap/pm": "^3.30.2",
+    "@tiptap/react": "^3.30.2",
+    "@tiptap/starter-kit": "^3.30.2",
     "@uiw/react-codemirror": "^4.23.7",
     "gray-matter": "^4.0.3",
     "jose": "^5.9.6",
@@ -17,7 +24,8 @@
     "next": "16.3.1",
     "next-mdx-remote": "^6.0.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "tiptap-markdown": "^0.9.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

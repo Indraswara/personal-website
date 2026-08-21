@@ -1,15 +1,9 @@
 "use client";
 
-import { useState, useEffect, useTransition, type ReactNode } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import { markdown } from "@codemirror/lang-markdown";
-import { renderPreview } from "@/lib/renderPreview";
+import RichEditor from "./RichEditor";
 import type { ActionResult } from "@/lib/actions";
-
-// CodeMirror touches `window` at import time, same reason site/'s xterm.js
-// is dynamically imported — see site/components/LiveTerminal.tsx.
-const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), { ssr: false });
 
 export type FieldSchema =
   | { key: string; label: string; type: "text" | "textarea" }
@@ -52,27 +46,28 @@ export default function MdxEditor({
     return v;
   });
   const [body, setBody] = useState(initialBody);
-  const [preview, setPreview] = useState<ReactNode>(null);
   const [status, setStatus] = useState("");
   const [isPending, startTransition] = useTransition();
-  const [isPreviewing, setIsPreviewing] = useState(false);
 
-  // Live preview, not a manual button — re-renders ~500ms after typing
-  // stops. Debounced (not on every keystroke) because each render is a real
-  // server round-trip (a Server Action running the actual MDX compiler, not
-  // a client-side regex renderer — see lib/renderPreview.tsx for why that
-  // matters for <Figure> and other MDX components).
-  useEffect(() => {
-    setIsPreviewing(true);
-    const timer = setTimeout(() => {
-      startTransition(async () => {
-        setPreview(await renderPreview(body));
-        setIsPreviewing(false);
-      });
-    }, 500);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only body should retrigger this
-  }, [body]);
+  const titleField = fields.find((f) => f.key === "title");
+  const restFields = fields.filter((f) => f.key !== "title");
+
+  // Slug auto-fills from the title while it's still untouched (new posts
+  // only — never for an existing one, where the slug is the filename and
+  // changing it out from under a save would orphan the old file).
+  const [slugTouched, setSlugTouched] = useState(slugLocked || initialSlug !== "");
+  function setTitle(title: string) {
+    setValues((v) => ({ ...v, title }));
+    if (!slugTouched) {
+      setSlug(
+        title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 60),
+      );
+    }
+  }
 
   function buildFrontmatter(): Record<string, unknown> {
     const fm: Record<string, unknown> = {};
@@ -126,14 +121,17 @@ export default function MdxEditor({
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm">
           <span className="text-fg-muted">slug</span>
           <input
             value={slug}
             disabled={slugLocked}
-            onChange={(e) => setSlug(e.target.value)}
+            onChange={(e) => {
+              setSlugTouched(true);
+              setSlug(e.target.value);
+            }}
             placeholder="my-new-post"
             className="rounded-md border border-border bg-bg-inset px-2 py-1 font-mono text-fg disabled:opacity-60"
           />
@@ -141,47 +139,45 @@ export default function MdxEditor({
         <span className="text-xs text-fg-subtle">{status}</span>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {fields.map((f) => (
-          <label key={f.key} className="flex flex-col gap-1 text-sm">
-            <span className="text-fg-muted">{f.label}</span>
-            {f.type === "textarea" ? (
-              <textarea
-                value={values[f.key]}
-                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                rows={2}
-                className="rounded-md border border-border bg-bg-inset px-2 py-1.5 text-fg"
-              />
-            ) : (
-              <input
-                value={values[f.key]}
-                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                type={f.type === "number" ? "number" : "text"}
-                placeholder={f.type === "tags" ? "tag1, tag2, tag3" : undefined}
-                className="rounded-md border border-border bg-bg-inset px-2 py-1.5 text-fg"
-              />
-            )}
-          </label>
-        ))}
-      </div>
+      {titleField && (
+        <input
+          value={values.title ?? ""}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          className="w-full border-none bg-transparent text-4xl font-bold text-fg outline-none placeholder:text-fg-subtle/50"
+        />
+      )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="rounded-md border border-border">
-          <CodeMirror
-            value={body}
-            height="60vh"
-            theme="dark"
-            extensions={[markdown()]}
-            onChange={(v: string) => setBody(v)}
-          />
+      <details className="rounded-md border border-border bg-bg-elevated open:pb-3">
+        <summary className="cursor-pointer px-3 py-2 text-xs font-bold tracking-wide text-fg-muted uppercase select-none">
+          Details {restFields.length ? `(${restFields.map((f) => f.label).join(", ")})` : ""}
+        </summary>
+        <div className="grid grid-cols-1 gap-3 px-3 sm:grid-cols-2">
+          {restFields.map((f) => (
+            <label key={f.key} className="flex flex-col gap-1 text-sm">
+              <span className="text-fg-muted">{f.label}</span>
+              {f.type === "textarea" ? (
+                <textarea
+                  value={values[f.key]}
+                  onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                  rows={2}
+                  className="rounded-md border border-border bg-bg-inset px-2 py-1.5 text-fg"
+                />
+              ) : (
+                <input
+                  value={values[f.key]}
+                  onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                  type={f.type === "number" ? "number" : "text"}
+                  placeholder={f.type === "tags" ? "tag1, tag2, tag3" : undefined}
+                  className="rounded-md border border-border bg-bg-inset px-2 py-1.5 text-fg"
+                />
+              )}
+            </label>
+          ))}
         </div>
-        <div className="relative max-h-[60vh] overflow-y-auto rounded-md border border-border bg-bg-elevated p-4">
-          {isPreviewing && (
-            <span className="absolute top-2 right-3 text-xs text-fg-subtle">rendering…</span>
-          )}
-          {preview ?? <p className="text-sm text-fg-subtle">Preview renders automatically as you type.</p>}
-        </div>
-      </div>
+      </details>
+
+      <RichEditor initialContent={initialBody} onChange={setBody} />
 
       <div className="flex gap-3">
         <button

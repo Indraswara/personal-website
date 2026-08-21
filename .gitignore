@@ -11,6 +11,7 @@
 # Build output
 /terminal/bin/
 node_modules/
+.next/
 
 # Go
 /terminal/vendor/

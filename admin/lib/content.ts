@@ -9,6 +9,9 @@ export const POSTS_DIR = path.join(REPO_DIR, "site/content/posts");
 export const CTF_DIR = path.join(REPO_DIR, "site/content/ctf");
 export const REGISTRY_PATH = path.join(REPO_DIR, "content/registry.json");
 export const SITE_DATA_PATH = path.join(REPO_DIR, "content/site-data.json");
+// Same public directory site/components/Figure.tsx's <img src> already
+// resolves against — an uploaded image needs no new serving path.
+export const IMAGES_DIR = path.join(REPO_DIR, "site/public/posts/images");
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 
