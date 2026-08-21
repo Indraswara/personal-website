@@ -1,0 +1,26 @@
+# tubes1-kripto client ("sigmachat.egolab.top") — built to static files and
+# served by nginx (mirrors labs/if3310-tubes/Dockerfile.web; the upstream
+# Dockerfile.prod instead installs the `serve` npm package for its prod
+# stage, heavier than nginx for this box). No source overrides needed — every
+# API/WS URL in frontend/src is already read from import.meta.env, nothing
+# hardcoded.
+# Build context MUST be the repo root:
+#   docker build -t egolab-tubes1kripto-web:latest -f labs/tubes1-kripto/Dockerfile.web \
+#     --build-arg VITE_API_BASE_URL=https://sigmachat.egolab.top/api \
+#     --build-arg VITE_API_WS_URL=wss://sigmachat.egolab.top/chatserver .
+FROM node:20-bookworm AS build
+WORKDIR /app
+COPY projects/tubes1-kripto/frontend/package.json projects/tubes1-kripto/frontend/package-lock.json* ./
+RUN npm ci
+COPY projects/tubes1-kripto/frontend/ ./
+
+ARG VITE_API_BASE_URL
+ARG VITE_API_WS_URL
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_API_WS_URL=${VITE_API_WS_URL}
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY labs/tubes1-kripto/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80

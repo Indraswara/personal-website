@@ -1,0 +1,13 @@
+#!/bin/sh
+# Same PDA-based HTML validator as `htmlcheck`, but reads the HTML to check
+# from stdin instead of a file path — used by the portfolio's on-site
+# "paste your HTML" checker (terminal/internal/htmlcheck), which runs this
+# in a one-off ephemeral container the same way the playground's `htmlcheck`
+# command does, just headless.
+# The sandbox's rootfs is --read-only; only $HOME (a tmpfs) is writable, so
+# the temp file has to live there, not the default /tmp.
+tmp="$(mktemp "${HOME:-/home/guest}/htmlcheck-XXXXXX.html")"
+trap 'rm -f "$tmp"' EXIT
+cat > "$tmp"
+cd /opt/labs/html-checker || exit 1
+exec python3 main.py pda.txt "$tmp"

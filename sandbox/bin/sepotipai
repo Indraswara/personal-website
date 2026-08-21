@@ -1,0 +1,10 @@
+#!/bin/sh
+# Run the binary from the read-only image (tmpfs $HOME is mounted noexec), but
+# cd into a writable dir so `data/default.txt` (read) and SAVE/LOAD (write)
+# resolve relative to cwd.
+d="$HOME/sepotipai"
+if [ ! -d "$d/data" ]; then
+  mkdir -p "$d/data"
+  cp /opt/labs/sepotipai/data/* "$d/data/" 2>/dev/null || true
+fi
+cd "$d" && exec /opt/labs/sepotipai/main

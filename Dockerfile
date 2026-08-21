@@ -9,6 +9,7 @@ COPY content /usr/share/nginx/html/content/
 COPY assets /usr/share/nginx/html/assets/
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY posts /usr/share/nginx/html/posts/
+COPY ctf /usr/share/nginx/html/ctf/
 
 EXPOSE 80
 

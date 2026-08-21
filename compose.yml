@@ -1,0 +1,298 @@
+# Unified compose file — local dev AND production (manual deploy, no CI).
+#
+# Services:
+#   web         nginx serving the static portfolio (egolab.top)
+#   terminal    Go backend: real SSH (wish) + web-terminal (WS) + sandbox orchestrator
+#
+# cloudflared is NOT a service here — this box already runs it as a host
+# systemd unit (/etc/cloudflared/config.yml) serving other subdomains. We add
+# ingress rules to that same config instead of running a second connector.
+# Everything below binds to 127.0.0.1 only; the systemd cloudflared reaches it
+# over the host loopback. There is no port published to 0.0.0.0 anywhere —
+# real SSH goes out through `cloudflared access tcp`, not an open port.
+#
+# Local dev: `docker compose up -d --build`.
+# Prod:      `./deploy.sh` on the VPS (git pull, rebuild, reload cloudflared).
+
+services:
+  web:
+    build: .
+    container_name: egolab-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8090:80"
+    networks:
+      - edge
+
+  terminal:
+    build: ./terminal
+    container_name: egolab-terminal
+    ports:
+      - "127.0.0.1:2022:2022" # SSH — reachable only via `cloudflared access tcp --hostname ssh.egolab.top`
+      - "127.0.0.1:8091:8080" # HTTP/WS bridge for the web terminal — reachable via term.egolab.top
+    environment:
+      SANDBOX_IMAGE: egolab-sandbox:latest
+      SANDBOX_NETWORK: egolab_sandbox
+      PROJECTS_DIR: /srv/projects
+      DATA_DIR: /data
+    volumes:
+      - terminal_data:/data # SSH host key + session state — survives `git reset --hard`
+      - /var/run/docker.sock:/var/run/docker.sock # backend spawns/kills sandbox containers; sandbox itself never gets this
+      - ./projects:/srv/projects:ro # cloned project artifacts (scripts/clone-projects.sh), read-only
+      - ./assets/cv:/data/cv:ro
+      - ./content/registry.json:/data/registry.json:ro
+    restart: unless-stopped
+    networks:
+      - edge
+      - sandbox # not used for terminal's own traffic — this membership just forces
+      # compose to create the egolab_sandbox network, which the orchestrator
+      # then attaches ephemeral `docker run` playground containers to by name.
+
+  # --- Fase 3: web projects, deployed as <slug>.egolab.top subdomains ---
+
+  if3110:
+    build:
+      context: .
+      dockerfile: labs/if3110-tubes/Dockerfile
+    container_name: egolab-if3110
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8100:80"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: if3110
+      POSTGRES_USER: if3110
+      POSTGRES_PASSWORD: ${IF3110_POSTGRES_PASSWORD:?set IF3110_POSTGRES_PASSWORD in .env}
+      BASE_URL: https://wbd.egolab.top
+    volumes:
+      - if3110_uploads:/var/www/html/public/uploads
+    networks:
+      - edge
+      - homelab_db # reaches the shared homelab postgres container by name
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 192m
+
+  algeo-api:
+    build:
+      context: .
+      dockerfile: labs/algeo02/Dockerfile.api
+    container_name: egolab-algeo-api
+    restart: unless-stopped
+    networks:
+      - algeo_internal # not published — only algeo-web talks to this, by container name
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0" # canvas image processing is genuinely CPU-heavy when a similarity run fires
+          memory: 384m
+
+  algeo-web:
+    build:
+      context: .
+      dockerfile: labs/algeo02/Dockerfile.web
+    container_name: egolab-algeo-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8101:80"
+    networks:
+      - edge
+      - algeo_internal
+    depends_on:
+      - algeo-api
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64m
+
+  dinasti-api:
+    build:
+      context: .
+      dockerfile: labs/dinasti-pak-lurah/Dockerfile.api
+    container_name: egolab-dinasti-api
+    restart: unless-stopped
+    networks:
+      - dinasti_internal # not published — only dinasti-web talks to this, by container name
+      # NOT on the sandbox network — this one genuinely needs real internet
+      # egress (it scrapes en.wikipedia.org directly), unlike everything else.
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 384m # IDS mode especially can visit hundreds of pages before
+          # converging (it re-explores from scratch at each depth), and every
+          # visited page's HTML plus its accumulated path history stays in
+          # memory for the life of the search — 128m OOM-killed it mid-search.
+
+  dinasti-web:
+    build:
+      context: .
+      dockerfile: labs/dinasti-pak-lurah/Dockerfile.web
+    container_name: egolab-dinasti-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8102:80"
+    networks:
+      - edge
+      - dinasti_internal
+    depends_on:
+      - dinasti-api
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64m
+
+  if3310-api:
+    build:
+      context: .
+      dockerfile: labs/if3310-tubes/Dockerfile.api
+    container_name: egolab-if3310-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://if3310:${IF3310_POSTGRES_PASSWORD:?set IF3310_POSTGRES_PASSWORD in .env}@postgres:5432/if3310?schema=public
+      JWT_SECRET: ${IF3310_JWT_SECRET:?set IF3310_JWT_SECRET in .env}
+      VAPID_PUBLIC_KEY: ${IF3310_VAPID_PUBLIC_KEY:?set IF3310_VAPID_PUBLIC_KEY in .env}
+      VAPID_PRIVATE_KEY: ${IF3310_VAPID_PRIVATE_KEY:?set IF3310_VAPID_PRIVATE_KEY in .env}
+      FRONTEND_URL: https://linkedin.egolab.top
+      BACKEND_URL: https://linkedin.egolab.top
+    volumes:
+      - if3310_store:/app/store
+    networks:
+      - if3310_internal # not published — only if3310-web talks to this, by container name
+      - homelab_db # reaches the shared homelab postgres container by name
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256m
+
+  if3310-web:
+    build:
+      context: .
+      dockerfile: labs/if3310-tubes/Dockerfile.web
+      args:
+        VITE_API_URL: https://linkedin.egolab.top
+        VITE_WS_URL: wss://linkedin.egolab.top/ws
+        VITE_PUBLIC_VAPID_KEY: ${IF3310_VAPID_PUBLIC_KEY:?set IF3310_VAPID_PUBLIC_KEY in .env}
+    container_name: egolab-if3310-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8103:80"
+    networks:
+      - edge
+      - if3310_internal
+    depends_on:
+      - if3310-api
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64m
+
+  riilcert:
+    build:
+      context: .
+      dockerfile: labs/riilcert/Dockerfile
+      args:
+        NEXT_PUBLIC_ETH_RPC_URL: ${RIILCERT_RPC_URL:-https://ethereum-sepolia-rpc.publicnode.com}
+    container_name: egolab-riilcert
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8104:3000"
+    volumes:
+      - riilcert_certificates:/app/public/certificates
+      - riilcert_history:/app/tmp
+    networks:
+      - edge
+      # Talks to the Sepolia RPC endpoint straight from the browser (client
+      # side), not from this container — this container itself only needs
+      # egress for `next start` telemetry, which is disabled below.
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256m
+
+  sigmachat-api:
+    build:
+      context: .
+      dockerfile: labs/tubes1-kripto/Dockerfile.api
+    container_name: egolab-sigmachat-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://sigmachat:${SIGMACHAT_POSTGRES_PASSWORD:?set SIGMACHAT_POSTGRES_PASSWORD in .env}@postgres:5432/sigmachat
+      JWT_SECRET: ${SIGMACHAT_JWT_SECRET:?set SIGMACHAT_JWT_SECRET in .env}
+    networks:
+      - sigmachat_internal # not published — only sigmachat-web talks to this, by container name
+      - homelab_db # reaches the shared homelab postgres container by name
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256m
+
+  sigmachat-migrate:
+    build:
+      context: .
+      dockerfile: labs/tubes1-kripto/Dockerfile.api
+      target: migrate
+    container_name: egolab-sigmachat-migrate
+    environment:
+      DATABASE_URL: postgresql://sigmachat:${SIGMACHAT_POSTGRES_PASSWORD:?set SIGMACHAT_POSTGRES_PASSWORD in .env}@postgres:5432/sigmachat
+    networks:
+      - homelab_db
+    profiles: ["migration"]
+
+  sigmachat-web:
+    build:
+      context: .
+      dockerfile: labs/tubes1-kripto/Dockerfile.web
+      args:
+        VITE_API_BASE_URL: https://sigmachat.egolab.top/api
+        VITE_API_WS_URL: wss://sigmachat.egolab.top/chatserver
+    container_name: egolab-sigmachat-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8105:80"
+    networks:
+      - edge
+      - sigmachat_internal
+    depends_on:
+      - sigmachat-api
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64m
+
+volumes:
+  terminal_data:
+  if3110_uploads:
+  if3310_store:
+  riilcert_certificates:
+  riilcert_history:
+
+networks:
+  edge:
+    name: egolab_edge
+  sandbox:
+    name: egolab_sandbox
+    internal: true # ephemeral playground containers live here — NO internet egress, ever
+  homelab_db:
+    name: homelab_homelab_internal # pre-existing network owned by /opt/app/homelab — not ours to create/destroy
+    external: true
+  algeo_internal:
+    name: egolab_algeo_internal # algeo-web <-> algeo-api only; algeo-api has no host-published port
+  dinasti_internal:
+    name: egolab_dinasti_internal # dinasti-web <-> dinasti-api only; dinasti-api has no host-published port
+  if3310_internal:
+    name: egolab_if3310_internal # if3310-web <-> if3310-api only; if3310-api has no host-published port
+  sigmachat_internal:
+    name: egolab_sigmachat_internal # sigmachat-web <-> sigmachat-api only; sigmachat-api has no host-published port

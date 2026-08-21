@@ -1,0 +1,21 @@
+# Terminal backend — SSH (wish) + web-terminal WS bridge + sandbox
+# orchestrator. Built from source since Go isn't installed on the VPS.
+
+FROM golang:1.23 AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -o /out/terminal .
+
+# `docker:cli` ships just the client binary (no daemon) — the orchestrator
+# shells out to it against the socket mounted at /var/run/docker.sock.
+#
+# Runs as root: holding the Docker socket is already root-equivalent access
+# to the host, so a non-root uid here buys no real isolation and would just
+# need its gid hand-matched to the host's docker group on every box. The
+# sandbox containers it spawns are the actual isolation boundary — this
+# process just orchestrates them and never runs untrusted input itself.
+FROM docker:27-cli
+COPY --from=build /out/terminal /usr/local/bin/terminal
+ENTRYPOINT ["/usr/local/bin/terminal"]

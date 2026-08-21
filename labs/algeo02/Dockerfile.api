@@ -1,0 +1,39 @@
+# algeo02 API ("algeo-api", internal only — reached via labs/algeo02's nginx
+# proxy at /api/) — Express server whose actual CBIR algorithms run as
+# separate `ts-node` subprocesses (see server.js's exec() calls). Build
+# context MUST be the repo root:
+#   docker build -t egolab-algeo-api:latest -f labs/algeo02/Dockerfile.api .
+FROM node:20-bookworm
+
+# `canvas` (npm) needs these to build/link natively.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential pkg-config python3 \
+      libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY projects/algeo02/src/server/package.json projects/algeo02/src/server/package-lock.json ./
+# The upstream repo committed its own node_modules instead of trusting a
+# clean install. Its server.js shells out to a bare `ts-node ColorSimilarity.ts`
+# (child_process.exec, not `npx` or a local ./node_modules/.bin path), which
+# only ever worked because the dev machine had ts-node/typescript installed
+# *globally* (typescript isn't even a declared dependency) — a global install
+# is genuinely what's needed here too, not just `npm ci`.
+RUN npm ci && npm install -g typescript ts-node
+
+# Only the real source — never the committed node_modules/ (copying the
+# whole src/server/ directory here would silently overwrite the npm ci
+# above with that stale, incomplete tree).
+COPY projects/algeo02/src/server/ColorSimilarity.ts   ./
+COPY projects/algeo02/src/server/CosineSimilarity.ts  ./
+COPY projects/algeo02/src/server/TextureSimilarity.ts ./
+COPY projects/algeo02/src/server/Saving.ts            ./
+COPY projects/algeo02/src/server/result.js            ./
+COPY projects/algeo02/src/server/dataset-uploads/     ./dataset-uploads/
+COPY projects/algeo02/src/server/image-uploads/       ./image-uploads/
+# Fixes on top of the upstream checkout — see labs/algeo02/overrides for
+# what and why (stale similarity-data cache, a path traversal endpoint).
+COPY labs/algeo02/overrides/server.js                 ./server.js
+
+EXPOSE 5000
+CMD ["node", "server.js"]

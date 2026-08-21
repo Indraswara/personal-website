@@ -1,0 +1,31 @@
+# if3310-tubes client ("linkedin.egolab.top") — built to static files and
+# served by nginx (the upstream Dockerfile ran the Vite dev server, far too
+# heavy for this box run 4-up alongside everything else on egolab.top).
+# Build context MUST be the repo root:
+#   docker build -t egolab-if3310-web:latest -f labs/if3310-tubes/Dockerfile.web \
+#     --build-arg VITE_API_URL=https://linkedin.egolab.top \
+#     --build-arg VITE_WS_URL=wss://linkedin.egolab.top/ws \
+#     --build-arg VITE_PUBLIC_VAPID_KEY=... .
+FROM node:20-bookworm AS build
+WORKDIR /app
+COPY projects/if3310-tubes/frontend/package.json projects/if3310-tubes/frontend/package-lock.json* ./
+RUN npm ci
+COPY projects/if3310-tubes/frontend/ ./
+# Fixes on top of the upstream checkout — see labs/if3310-tubes/overrides
+# (hardcoded http://localhost:3000 API calls across ~11 files, and a
+# hardcoded ws://127.0.0.1:8000 socket — all replaced with the same
+# import.meta.env.VITE_API_URL pattern a few files already used).
+COPY labs/if3310-tubes/overrides/frontend/ ./
+
+ARG VITE_API_URL
+ARG VITE_WS_URL
+ARG VITE_PUBLIC_VAPID_KEY
+ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_WS_URL=${VITE_WS_URL}
+ENV VITE_PUBLIC_VAPID_KEY=${VITE_PUBLIC_VAPID_KEY}
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY labs/if3310-tubes/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80

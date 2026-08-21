@@ -79,9 +79,9 @@ body {
    Layout
    ============================================ */
 .container {
-  max-width: 900px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 32px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -257,16 +257,17 @@ body {
    Home
    ============================================ */
 .home {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   align-items: center;
-  justify-content: center;
+  gap: 48px;
   min-height: 300px;
+  padding: 32px 0;
 }
 
 .home-text {
   font-size: 18px;
   line-height: 1.8;
-  text-align: center;
   color: var(--text-secondary);
   max-width: 600px;
 }
@@ -274,9 +275,91 @@ body {
 .home-actions {
   margin-top: 24px;
   display: flex;
-  justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.home-terminal {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+
+.terminal-chrome {
+  background: #161b22;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.terminal-chrome-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.terminal-chrome-dots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #30363d;
+}
+
+.terminal-chrome-dots span:nth-child(1) { background: #ff5f56; }
+.terminal-chrome-dots span:nth-child(2) { background: #ffbd2e; }
+.terminal-chrome-dots span:nth-child(3) { background: #27c93f; }
+
+.terminal-chrome-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #8b949e;
+}
+
+#hero-terminal {
+  background: #0d1117;
+  padding: 12px;
+  height: 460px;
+}
+
+/* ============================================
+   HTML Checker (on-site feature)
+   ============================================ */
+.htmlcheck-intro {
+  color: var(--text-secondary);
+  max-width: 720px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.htmlcheck-input {
+  width: 100%;
+  min-height: 180px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  resize: vertical;
+}
+
+.htmlcheck-actions {
+  display: flex;
+  gap: 10px;
+  margin: 14px 0 20px;
+  flex-wrap: wrap;
+}
+
+.htmlcheck-terminal {
+  max-width: 100%;
+}
+
+#htmlcheck-output {
+  background: #0d1117;
+  padding: 12px;
+  height: 420px;
 }
 
 /* ============================================
@@ -459,6 +542,109 @@ body {
 
 .btn.secondary:hover {
   background-color: var(--btn-secondary-hover);
+}
+
+.lab-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: normal;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.lab-badge-live {
+  color: #2ea043;
+}
+
+.lab-badge-down {
+  color: var(--text-muted);
+}
+
+.lab-hint {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+}
+
+.lab-hint code {
+  background: var(--bg-code);
+  padding: 2px 6px;
+  border-radius: 2px;
+  margin: 0 4px;
+}
+
+.lab-hint a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* ============================================
+   Command Palette
+   ============================================ */
+.cmdk-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+}
+
+.cmdk-overlay[hidden] {
+  display: none;
+}
+
+.cmdk-box {
+  width: min(560px, 92vw);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.cmdk-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  padding: 14px 16px;
+  outline: none;
+}
+
+.cmdk-list {
+  list-style: none;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.cmdk-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.cmdk-item.active {
+  background: var(--bg-code);
+  color: var(--text-primary);
+}
+
+.cmdk-hint {
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* ============================================
@@ -823,8 +1009,16 @@ body {
     display: block;
   }
 
+  .home {
+    grid-template-columns: 1fr;
+  }
+
   .home-text {
     font-size: 16px;
+  }
+
+  #hero-terminal {
+    height: 280px;
   }
 
   .section-title {

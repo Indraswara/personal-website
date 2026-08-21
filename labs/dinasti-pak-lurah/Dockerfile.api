@@ -1,0 +1,25 @@
+# dinasti-pak-lurah backend ("dinasti-api", internal only — reached via
+# labs/dinasti-pak-lurah's nginx proxy at /search) — a WikiRace BFS/IDS
+# solver that scrapes en.wikipedia.org directly (github.com/gocolly/colly),
+# so unlike the rest of egolab.top this container needs real internet
+# egress (see compose.yml — it is NOT on the no-egress sandbox network).
+# Build context MUST be the repo root:
+#   docker build -t egolab-dinasti-api:latest -f labs/dinasti-pak-lurah/Dockerfile.api .
+FROM golang:1.22 AS build
+WORKDIR /src
+COPY projects/dinasti-pak-lurah/backend/go.mod projects/dinasti-pak-lurah/backend/go.sum ./
+RUN go mod download
+COPY projects/dinasti-pak-lurah/backend/*.go ./
+# Fixes on top of the upstream checkout — see labs/dinasti-pak-lurah/overrides:
+# removes the public, unauthenticated /CRASHTHISLMAO os.Exit(0) endpoint, and
+# fixes a colly Parallelism:100 vs. single-receive-channel deadlock in both
+# search modes that hangs any crawl past the first page.
+COPY labs/dinasti-pak-lurah/overrides/backend/main.go ./main.go
+COPY labs/dinasti-pak-lurah/overrides/backend/bfs.go  ./bfs.go
+COPY labs/dinasti-pak-lurah/overrides/backend/ids.go  ./ids.go
+RUN CGO_ENABLED=0 go build -o /out/dinasti-api .
+
+FROM gcr.io/distroless/static-debian12
+COPY --from=build /out/dinasti-api /dinasti-api
+EXPOSE 3001
+ENTRYPOINT ["/dinasti-api"]

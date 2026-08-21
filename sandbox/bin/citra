@@ -1,0 +1,4 @@
+#!/bin/sh
+# Digital-image edge detection (Sobel/Prewitt/Roberts/Laplace/LoG).
+# Output PNGs land in the current directory ($HOME is writable).
+exec python3 /opt/labs/citra-digital/citra.py "$@"

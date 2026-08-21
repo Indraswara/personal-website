@@ -1,0 +1,16 @@
+# algeo02 client ("algeo.egolab.top") — CBIR React front end, built to
+# static files and served by nginx (never the CRA dev server — see the
+# resource notes in the plan; a dev server per web project is far too heavy
+# for this box). Build context MUST be the repo root:
+#   docker build -t egolab-algeo-web:latest -f labs/algeo02/Dockerfile.web .
+FROM node:20-bookworm AS build
+WORKDIR /app
+COPY projects/algeo02/src/client/package.json projects/algeo02/src/client/package-lock.json* ./
+RUN npm ci
+COPY projects/algeo02/src/client/ ./
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+COPY labs/algeo02/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80

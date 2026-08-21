@@ -1,0 +1,36 @@
+# tubes1-kripto backend ("sigmachat-api", internal only — reached via
+# labs/tubes1-kripto's nginx proxy at /api/ and /chatserver) — Express REST
+# API plus a WebSocket server mounted on the SAME http.Server at path
+# /chatserver (backend/src/app.ts), unlike if3310-tubes' separate raw
+# ws.Server port. No overrides needed on top of upstream — CORS is already
+# origin:'*', there's no hardcoded domain anywhere in backend/src, and PORT
+# only needs a default we set below (upstream code does
+# `Number(process.env.PORT)` with no fallback).
+# Build context MUST be the repo root:
+#   docker build -t egolab-tubes1kripto-api:latest -f labs/tubes1-kripto/Dockerfile.api .
+FROM node:20-bookworm
+WORKDIR /app
+COPY projects/tubes1-kripto/backend/package.json projects/tubes1-kripto/backend/package-lock.json* ./
+RUN npm ci
+COPY projects/tubes1-kripto/backend/ ./
+RUN npx tsc -p tsconfig.json
+RUN npm prune --omit=dev
+
+ENV NODE_ENV=production
+ENV PORT=4001
+EXPOSE 4001
+CMD ["node", "dist/src/app.js"]
+
+# --- migrate stage: one-off `drizzle-kit push` against the shared homelab
+# postgres, run via `docker compose --profile migration run --rm sigmachat-migrate`
+# (mirrors projects/tubes1-kripto/migrate.Dockerfile, adapted to this repo's
+# COPY-from-context convention instead of its own root build context).
+FROM node:20-bookworm AS migrate
+WORKDIR /app
+COPY projects/tubes1-kripto/backend/package.json projects/tubes1-kripto/backend/package-lock.json* ./
+RUN npm ci
+COPY projects/tubes1-kripto/backend/drizzle.config.ts ./
+COPY projects/tubes1-kripto/backend/tsconfig.json ./
+COPY projects/tubes1-kripto/backend/src ./src
+ENTRYPOINT ["npx", "drizzle-kit"]
+CMD ["push", "--force"]

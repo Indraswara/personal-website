@@ -1,0 +1,564 @@
+@font-face {
+  font-family: "SSP-Light";
+  src: url("../fonts/SourceSansPro-Light.ttf") format("truetype");
+  font-weight: normal;
+  font-weight: normal;
+}
+@font-face {
+  font-family: "SSP-SemiBold";
+  src: url("../fonts/SourceSansPro-Semibold.ttf") format("truetype");
+  font-weight: normal;
+  font-weight: normal;
+}
+@font-face {
+  font-family: "SSP-Regular";
+  src: url("../fonts/SourceSansPro-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-weight: normal;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 10px;
+  margin: 20px 100px;
+  margin-top: 70px;
+  border-radius: 8px;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  grid-column: 1;
+  gap: 20px;
+  width: 100%;
+}
+
+.search-section {
+  grid-column: 2;
+  min-width: 200px;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* height: 280px; */
+  border-radius: 8px;
+  border: 1px solid #dfdeda;
+}
+
+.profile-image {
+  display: flex;
+  background-color: white;
+  transform: translateY(-50px);
+  padding: 5px;
+  width: 100px;
+}
+
+.profile-section img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+}
+
+.profile-bg-blue {
+  width: 100%;
+  background-color: lightblue;
+  min-height: 100px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.profile-bg-white {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background-color: white;
+  width: 100%;
+  border-bottom: 1px solid #dfdeda;
+  padding-left: 20px;
+  padding-bottom: 20px;
+}
+
+.profile-name {
+  font-family: "SSP-SemiBold", sans-serif;
+  margin-top: -40px;
+  font-size: 30px;
+}
+
+.profile-about {
+  margin-top: 20px;
+  font-family: "SSP-Regular", sans-serif;
+  font-size: 17px;
+}
+.profile-location {
+  font-family: "SSP-Regular", sans-serif;
+  color: #595959;
+  font-size: 15px;
+}
+
+.search-bar {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.search-bar button {
+  background-color: #88aaee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  height: 40px;
+  border: 1px solid black;
+  border-left-width: 0px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+.search {
+  padding: 10px 10px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border: 1px solid black;
+  font-family: "SSP-Regular", sans-serif;
+  width: 100%;
+  height: 40px;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #88aaee;
+  margin-top: 20px;
+  padding: 10px 20px;
+  gap: 10px;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.filter-group {
+  font-family: "SSP-Regular", sans-serif;
+  font-size: 15px;
+}
+
+.filter-group label {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 10px;
+}
+
+.filter-sortby {
+  font-family: "SSP-Regular", sans-serif;
+  width: 110px;
+  padding: 5px 10px;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 8px;
+  margin-left: 10px;
+}
+
+.pagination-section {
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  font-family: "SSP-SemiBold", sans-serif;
+}
+
+.pagination-prev,
+.pagination-next {
+  background-color: #88aaee;
+  border: 1px solid black;
+  border-radius: 8px;
+  display: flex;
+  padding: 5px 10px;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+.pagination-page {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 5px 13px;
+  background-color: #88aaee;
+}
+
+.pagination-page.active {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 5px 13px;
+  background-color: white;
+}
+
+.pagination-ellipsis {
+  padding: 5px 6px;
+  color: #555;
+}
+
+.job-lists {
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid #dfdeda;
+}
+
+.job-lists-title {
+  font-family: "SSP-SemiBold";
+  font-size: 25px;
+}
+
+.job-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.job-card {
+  flex: 1 1 150px;
+  max-width: calc((100% / 3) - 10px);
+  min-width: 150px;
+  height: 150px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 10px;
+  border: 1px solid #dfdeda;
+  display: flex;
+  flex-direction: column;
+}
+.job-card:hover {
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+}
+.job-title {
+  font-family: "SSP-SemiBold", sans-serif;
+  font-size: 18px;
+  text-align: left;
+}
+
+.job-company {
+  font-size: 15px;
+  color: #595959;
+  text-align: left;
+}
+
+.job-location {
+  color: #919191;
+  font-size: 15px;
+  text-align: left;
+}
+
+.modal-overlay {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.modal-content {
+  display: block;
+  position: relative;
+  flex-direction: column;
+  background-color: white;
+  margin: 15% auto;
+  border-radius: 11px;
+  padding: 0px 20px 20px 20px;
+  width: 600px;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 1);
+}
+
+.close {
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.back-logo {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  justify-content: flex-end;
+  align-items: flex-end;
+  width: 20px;
+}
+
+.modal-title {
+  font-family: "SSP-SemiBold", sans-serif;
+  font-size: 30px;
+  color: #191919;
+}
+
+.modal-geo {
+  display: flex;
+  flex-direction: row;
+}
+
+.modal-connector {
+  margin-top: -6px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.modal-company,
+.modal-location {
+  font-family: "SSP-Regular", sans-serif;
+  color: #595959;
+  font-size: 20px;
+  margin-top: -8px;
+}
+
+.modal-loc-type {
+  display: flex;
+  flex-direction: row;
+}
+
+.modal-job {
+  display: flex;
+  flex-direction: row;
+  margin-top: 5px;
+  align-items: center;
+}
+
+.modal-logo {
+  width: 20px;
+  margin-right: 5px;
+  margin-top: -5px;
+  display: flex;
+  color: #666666;
+  vertical-align: middle;
+}
+
+.modal-status {
+  font-family: "SSP-Regular", sans-serif;
+  color: #5d6e69;
+  background-color: #daebd1;
+  font-size: 15px;
+  margin-top: -4px;
+  padding: 1px 10px;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-type {
+  font-family: "SSP-Regular", sans-serif;
+  color: #595959;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  display: flex;
+  margin-left: 10px;
+  margin-top: -5px;
+}
+
+.desc {
+  font-family: "SSP-SemiBold";
+  margin-top: 20px;
+  font-size: 20px;
+}
+
+.modal-desc {
+  margin-top: 0px;
+  overflow-y: auto;
+  max-height: 30vh;
+}
+
+.modal-available {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  gap: 8px;
+}
+.modal-available i {
+  display: flex;
+  align-items: center;
+  color: #666666;
+}
+.modal-available select {
+  font-family: "SSP-Regular", sans-serif;
+  width: 100px;
+  padding: 5px 10px;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 8px;
+}
+
+.modal-action {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 45px 1fr 1fr;
+  width: 100%;
+  gap: 10px;
+}
+
+.modal-action > * {
+  font-family: "SSP-SemiBold", sans-serif;
+  border-radius: 5px;
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+}
+.modal-trash {
+  border: 1px solid black;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+  background-color: #e14d45;
+}
+.modal-trash button i {
+  color: white;
+}
+.modal-edit,
+.modal-view {
+  background-color: #88aaee;
+  border: 1px solid black;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.modal-edit:active,
+.modal-trash:active,
+.modal-view:active,
+.add-lowongan:active {
+  transform: translateY(4px) translateX(4px);
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.add-lowongan {
+  position: fixed;
+  display: flex;
+  top: 100%;
+  left: 100%;
+  width: 50px;
+  transform: translateX(-70px) translateY(-70px);
+  border: 1px solid black;
+  border-radius: 50%;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.add-lowongan:active {
+  transform: translateX(-66px) translateY(-66px);
+}
+
+.modal-attachment {
+  position: relative;
+  width: 100%;
+  display: flex;
+  margin: 0px;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.modal-image {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+.modal-image img {
+  height: 200px;
+  justify-content: center;
+  width: auto;
+  max-width: 560px;
+  object-fit: contain;
+}
+
+.modal-image-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.prev {
+  left: 10px;
+}
+.next {
+  right: 10px;
+}
+.display-none {
+  display: none;
+}
+
+@media only screen and (max-width: 1000px) {
+  main {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 10px;
+    margin-top: 70px;
+    gap: 20px;
+  }
+
+  .main-content {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+  }
+
+  .search-section {
+    max-width: none;
+    order: 2;
+  }
+  .profile-section {
+    order: 1;
+  }
+  .job-lists {
+    order: 3;
+  }
+  .pagination-section {
+    order: 4;
+  }
+  .filter-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 10px 20px;
+    gap: 10px;
+  }
+  .filter-group {
+    width: 100%;
+  }
+  .filter-sortby {
+    margin-left: 0px;
+  }
+}
+
+@media only screen and (max-width: 440px) {
+  .filter-container {
+    padding: 10px 5px;
+    gap: 0px;
+  }
+}
+
+@media only screen and (max-width: 1080px) {
+  .filter-sortby {
+    margin-left: 0px;
+  }
+}

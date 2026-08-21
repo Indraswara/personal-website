@@ -1,0 +1,25 @@
+
+  ▄███▄  ▄███▄  ▄███▄  ▄█    ▄████▄ ▄████▄
+  █▄▄▄   █   █  █   █  █     █▄▄▄▄█ █▄▄▄▄█   e g o l a b . t o p
+  █▄▄▄█  █▄▄▄█  █▄▄▄█  █▄▄▄  █    █ █▄▄▄▄▄     ~ playground ~
+
+  You're inside an ephemeral, network-isolated Docker container.
+  Nothing here is real — no internet, no persistence, ~10 min lifetime.
+  Poke around, run my projects, break things. It all evaporates on exit.
+
+  PROJECT DEMOS
+    sepotipai            Spotify-like queue/playlist manager (C)
+    burbir                Twitter-like social app (C, custom ADTs)
+                          (folder prompt + every command needs a trailing
+                          ";" — e.g. just ";" to load, "DAFTAR;" to sign up)
+    htmlcheck <file>     validate HTML via a Pushdown Automaton (Python)
+    citra edge <img> <op>  edge detection: sobel|prewitt|roberts|laplace|log
+
+  GETTING AROUND
+    labs                 show this menu again
+    ls /srv/projects     browse the read-only source of every project
+    cat ~/README         quick reference
+    exit                 leave the playground
+
+  The CV I keep in here: cat ~/cv.txt  (grab the PDF with scp — see the menu).
+

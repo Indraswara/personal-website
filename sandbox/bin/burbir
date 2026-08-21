@@ -1,0 +1,15 @@
+#!/bin/sh
+# Run from the read-only image (tmpfs $HOME is noexec); cd into a writable dir
+# because BurBir writes to ./config/ on SIMPAN.
+#
+# BurBir prefixes whatever folder name the guest types with its own
+# "./config/" base, so an EMPTY answer (just the required ";" terminator —
+# every input in this program needs one, a WordMachine convention) resolves
+# to exactly this seeded "config" folder, pre-populated with valid empty
+# *.config files (see sandbox/Dockerfile) so it always loads cleanly.
+d="$HOME/burbir"
+if [ ! -d "$d/config" ]; then
+  mkdir -p "$d/config"
+  cp /opt/labs/if2110/empty-config/* "$d/config/" 2>/dev/null || true
+fi
+cd "$d" && exec /opt/labs/if2110/program

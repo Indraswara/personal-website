@@ -1,0 +1,35 @@
+========================================================================
+  INDRASWARA
+  Computer Science student @ ITB · Security Engineer · Developer
+  github.com/Indraswara · egolab.top
+========================================================================
+
+  ( placeholder — the real PDF is downloadable from the SSH menu / site )
+
+EDUCATION
+  Bandung Institute of Technology (ITB)                     2022 – 2026
+  B.Sc. Computer Science
+
+EXPERIENCE
+  Security Engineer                                       06/2025 – 08/2025
+    Mobile scraper development and reverse-engineering tasks.
+  Laboratory Assistant, SISTER ITB                        08/2024 – present
+    Networking, operating systems, virtualization, distributed systems.
+  Backend Engineer (outsourced)                          05/2024 – 08/2024
+    TypeScript web scrapers, database schema design, React + Strapi.
+  IT Staff                                                08/2023 – 08/2024
+    Built Gen-Finder (NIM search); managed The Gestalt Project.
+
+SELECTED PROJECTS   (run the demos: type `labs`)
+  Sepotipai            queue/playlist manager in C
+  BurBir               Twitter-like social app in C on custom ADTs
+  HTML Checker         HTML validation via a Pushdown Automaton (Python)
+  LinkedIn clones      PHP/PostgreSQL and Express/Prisma/React
+  WikiRace Solver      shortest Wikipedia click-path (Go, BFS/IDS)
+  CBIR                 content-based image retrieval (Node/TS)
+
+SKILLS
+  Languages   C, Go, TypeScript/JavaScript, Python, PHP
+  Systems     Linux, Docker, networking, virtualization
+  Security    reverse engineering, CTF, web/pwn/crypto
+========================================================================

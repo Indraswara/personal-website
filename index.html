@@ -6,7 +6,17 @@
     <meta name="description" content="Indraswara - Computer Science student at ITB, Security Engineer, and Developer">
     <meta name="theme-color" content="#f5f5f5">
     <title>Indraswara</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Indraswara">
+    <meta property="og:description" content="Computer Science student at ITB, Security Engineer, and Developer">
+    <meta property="og:url" content="https://egolab.top">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Indraswara">
+    <meta name="twitter:description" content="Computer Science student at ITB, Security Engineer, and Developer">
 </head>
 <body>
     <div class="container">
@@ -31,6 +41,13 @@
         </nav>
         <div class="nav-overlay"></div>
 
+        <div id="cmdk-overlay" class="cmdk-overlay" hidden>
+            <div class="cmdk-box" role="dialog" aria-label="Command palette">
+                <input id="cmdk-input" class="cmdk-input" type="text" placeholder="Type a command or search…" autocomplete="off" />
+                <ul id="cmdk-list" class="cmdk-list"></ul>
+            </div>
+        </div>
+
         <main id="app" class="content">
             <!-- Content rendered here by app.js -->
         </main>
@@ -40,6 +57,8 @@
         </footer>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
     <script src="content/home.js"></script>
     <script src="content/experience.js"></script>
     <script src="content/projects.js"></script>

@@ -1,1 +1,20 @@
+# Cloned project artifacts — re-created on deploy by scripts/clone-projects.sh
+/projects/
+
+# Secrets and local env
+.env
+*.env.local
+
+# CV binary (dropped in by hand / out of band)
+/assets/cv/*.pdf
+
+# Build output
+/terminal/bin/
+node_modules/
+
+# Go
+/terminal/vendor/
+
+# Editor / OS cruft
 codex
+.DS_Store

@@ -1,0 +1,24 @@
+# if3310-tubes backend ("if3310-api", internal only — reached via
+# labs/if3310-tubes's nginx proxy at /api/, /store/, and /ws) — Express REST
+# API on :3000 plus a separate raw ws.Server on :8000.
+# Build context MUST be the repo root:
+#   docker build -t egolab-if3310-api:latest -f labs/if3310-tubes/Dockerfile.api .
+FROM node:20-bookworm
+WORKDIR /app
+COPY projects/if3310-tubes/backend/package.json projects/if3310-tubes/backend/package-lock.json* ./
+RUN npm ci
+COPY projects/if3310-tubes/backend/ ./
+# Fixes on top of the upstream checkout — see labs/if3310-tubes/overrides
+# (hardcoded frontend URLs in CORS config and push-notification payloads;
+# see the comment at the top of overrides/backend/src/index.ts).
+COPY labs/if3310-tubes/overrides/backend/ ./
+# Dead code: a raw pg.Pool with hardcoded (and wrong — "postgresql" isn't
+# the real db/user/password) credentials, never imported by anything —
+# the app's real Prisma-backed subscription handling lives in
+# controllers/notifController.ts. Remove rather than leave it as a trap for
+# a future edit that re-enables it.
+RUN rm -f src/models/subscriptionModel.ts
+RUN npx prisma generate
+
+EXPOSE 3000 8000
+CMD ["npx", "tsx", "src/index.ts"]

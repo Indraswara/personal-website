@@ -1,0 +1,27 @@
+egolab.top playground — quick reference
+=======================================
+
+This is a throwaway container. No internet, no persistence, auto-killed after
+about 10 minutes idle. Everything you do here is discarded on exit.
+
+Project demos (type the command):
+  sepotipai              Spotify-like queue/playlist manager, in C.
+                         Type START first, then LIST / PLAY / QUEUE / HELP.
+  burbir                 Twitter-like social app, in C. Every input needs a
+                         trailing ";" — type just ";" at the folder prompt,
+                         then DAFTAR; to register, KICAU; to post.
+  htmlcheck <file.html>  Validate HTML with a Pushdown Automaton.
+                         Samples live in /opt/labs/html-checker/test/.
+  citra edge <img> <op>  Edge detection. op = sobel|prewitt|roberts|laplace|log.
+                         Sample images in /opt/labs/citra-digital/samples/.
+
+Browse the source of every project (read-only):
+  ls /srv/projects
+  ls /srv/projects/sepotipai/src
+
+My CV:
+  cat ~/cv.txt           plain-text version, right here
+  the PDF                grab it over scp from the SSH menu (Download CV)
+
+Web projects are hosted as their own subdomains — see the Projects section on
+the site (https://egolab.top) for the live links.

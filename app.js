@@ -124,15 +124,25 @@ function renderHome() {
       <div class="home-text">
         ${introMarkup}
         <div class="home-actions">
-          <a class="btn" href="https://cv.indraswara.me" target="_blank" rel="noopener noreferrer">
+          <a class="btn" href="assets/cv/Indraswara-CV.pdf" target="_blank" rel="noopener noreferrer">
             &darr; Download CV
           </a>
         </div>
         ${contactMarkup}
       </div>
+      <div class="home-terminal">
+        <div class="terminal-chrome">
+          <div class="terminal-chrome-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="terminal-chrome-title">guest@egolab</div>
+        </div>
+        <div id="hero-terminal"></div>
+      </div>
     </div>
   `
   updatePageTitle()
+  initHeroTerminal()
 }
 
 function renderSection(sectionName) {
@@ -150,7 +160,7 @@ function renderSection(sectionName) {
       html += `
         <div class="item">
           <div class="item-header">
-            <div class="item-title">${item.title}</div>
+            <div class="item-title">${item.title} ${sectionName === "project" ? renderLabBadge(item) : ""}</div>
             ${item.date ? `<div class="item-date">${item.date}</div>` : ""}
           </div>
           ${item.description ? `<div class="item-description">${item.description}</div>` : ""}
@@ -309,6 +319,109 @@ function renderNotFound(message = "Page not found") {
   const app = document.getElementById("app")
   app.innerHTML = `<div class="empty-state">${message}</div>`
   updatePageTitle("", "Not Found")
+}
+
+/* ============================================
+   HTML Checker — on-site interactive feature.
+   Runs the exact same htmlcheck CLI the SSH/web playground offers, in the
+   same hardened one-shot sandbox container, via terminal/internal/webbridge's
+   POST /api/htmlcheck. No separate implementation to keep in sync.
+   ============================================ */
+let htmlCheckTerm = null
+const HTMLCHECK_SAMPLE_VALID = `<html>\n  <head><title>Sample</title></head>\n  <body><p>Hello, world!</p></body>\n</html>`
+const HTMLCHECK_SAMPLE_INVALID = `<html>\n  <head><body><p>Missing closing tags`
+
+function htmlCheckAPIURL() {
+  const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1"
+  return isLocal ? `http://${location.hostname}:8091/api/htmlcheck` : "https://term.egolab.top/api/htmlcheck"
+}
+
+function renderHtmlChecker() {
+  const app = document.getElementById("app")
+  app.innerHTML = `
+    <div class="section">
+      <h2 class="section-title">HTML Checker</h2>
+      <p class="htmlcheck-intro">
+        Validates HTML syntax with a Pushdown Automaton derived from a context-free grammar
+        (a Theory of Computation project). Paste HTML below — this runs the actual CLI tool,
+        in the same hardened, ephemeral, no-egress sandbox the SSH/web playground uses.
+      </p>
+      <textarea id="htmlcheck-input" class="htmlcheck-input" spellcheck="false"
+        placeholder="<html>...</html>">${HTMLCHECK_SAMPLE_VALID}</textarea>
+      <div class="htmlcheck-actions">
+        <button id="htmlcheck-run" class="btn">Check</button>
+        <button id="htmlcheck-sample-valid" class="btn secondary" type="button">Valid sample</button>
+        <button id="htmlcheck-sample-invalid" class="btn secondary" type="button">Invalid sample</button>
+      </div>
+      <div class="home-terminal htmlcheck-terminal">
+        <div class="terminal-chrome">
+          <div class="terminal-chrome-dots"><span></span><span></span><span></span></div>
+          <div class="terminal-chrome-title">htmlcheck</div>
+        </div>
+        <div id="htmlcheck-output"></div>
+      </div>
+    </div>
+  `
+  updatePageTitle("html-checker", "HTML Checker")
+  initHtmlChecker()
+}
+
+function initHtmlChecker() {
+  const el = document.getElementById("htmlcheck-output")
+  if (!el || typeof Terminal === "undefined") return
+  if (htmlCheckTerm) {
+    htmlCheckTerm.dispose()
+  }
+  const term = new Terminal({
+    convertEol: true,
+    disableStdin: true,
+    fontFamily: "var(--font-mono)",
+    fontSize: 13,
+    theme: { background: "#0d1117", foreground: "#c9d1d9" },
+  })
+  term.open(el)
+  term.write("paste some HTML and hit Check\r\n")
+  htmlCheckTerm = term
+
+  const input = document.getElementById("htmlcheck-input")
+  const runBtn = document.getElementById("htmlcheck-run")
+
+  const run = async () => {
+    const html = input.value.trim()
+    if (!html) return
+    runBtn.disabled = true
+    runBtn.textContent = "Checking…"
+    term.reset()
+    term.write("running…\r\n")
+    try {
+      const res = await fetch(htmlCheckAPIURL(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html }),
+      })
+      const data = await res.json()
+      term.reset()
+      if (data.error) {
+        term.write(`error: ${data.error}\r\n`)
+      } else {
+        term.write(data.output.replace(/\n/g, "\r\n"))
+      }
+    } catch (err) {
+      term.reset()
+      term.write("error: could not reach the checker — try again shortly\r\n")
+    } finally {
+      runBtn.disabled = false
+      runBtn.textContent = "Check"
+    }
+  }
+
+  runBtn.addEventListener("click", run)
+  document.getElementById("htmlcheck-sample-valid").addEventListener("click", () => {
+    input.value = HTMLCHECK_SAMPLE_VALID
+  })
+  document.getElementById("htmlcheck-sample-invalid").addEventListener("click", () => {
+    input.value = HTMLCHECK_SAMPLE_INVALID
+  })
 }
 
 /* ============================================
@@ -472,10 +585,16 @@ function renderContactLinks() {
 }
 
 function renderItemActions(sectionName, item = {}) {
-  if (sectionName !== "project" || !item.link) return ""
+  if (sectionName !== "project") return ""
+  const viewBtn = item.link
+    ? `<a class="btn" href="${item.link}" target="_blank" rel="noopener noreferrer">View Project</a>`
+    : ""
+  const labAction = renderLabAction(item)
+  if (!viewBtn && !labAction) return ""
   return `
     <div class="item-actions">
-      <a class="btn" href="${item.link}" target="_blank" rel="noopener noreferrer">View Project</a>
+      ${viewBtn}
+      ${labAction}
     </div>
   `
 }
@@ -494,6 +613,11 @@ async function renderPage() {
   if (!section) {
     renderHome()
     return
+  }
+  disposeHeroTerminal()
+  if (section !== "html-checker" && htmlCheckTerm) {
+    htmlCheckTerm.dispose()
+    htmlCheckTerm = null
   }
 
   if (ROUTABLE_SECTIONS.has(section)) {
@@ -516,6 +640,11 @@ async function renderPage() {
     } else {
       renderCtfList()
     }
+    return
+  }
+
+  if (section === "html-checker") {
+    renderHtmlChecker()
     return
   }
 
@@ -556,11 +685,277 @@ window.addEventListener("hashchange", () => {
   window.scrollTo({ top: 0, behavior: "smooth" })
 })
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   initTheme()
   initMobileMenu()
+  initCommandPalette()
   if (!window.location.hash) {
     window.location.hash = "#/"
   }
+  await loadLabRegistry()
   renderPage()
+  pollLabStatus()
+  setInterval(pollLabStatus, 15000)
 })
+
+/* ============================================
+   Lab registry — the interactive projects behind
+   egolab.top's SSH/web terminal (see terminal/).
+   Merged into the existing project list rather than
+   replacing it, so hand-written portfolio entries in
+   content/projects.js are kept as-is.
+   ============================================ */
+const LAB_STATUS_ORIGIN = "https://term.egolab.top"
+let labStatusBySlug = {}
+
+async function loadLabRegistry() {
+  try {
+    const res = await fetch("content/registry.json", { cache: "no-store" })
+    if (!res.ok) return
+    const data = await res.json()
+    const projects = Array.isArray(data.projects) ? data.projects : []
+    const labItems = projects.map((p) => ({
+      title: p.title,
+      date: p.date,
+      description: p.description,
+      tags: p.tags || [],
+      link: p.repo,
+      slug: p.slug,
+      web: p.web,
+      lab: p.lab,
+      site: p.site,
+    }))
+    window.PROJECT_ITEMS = labItems.concat(window.PROJECT_ITEMS || [])
+    if (window.SITE_DATA) window.SITE_DATA.project = window.PROJECT_ITEMS
+  } catch (err) {
+    console.warn("lab registry unavailable, showing static project list only", err)
+  }
+}
+
+async function pollLabStatus() {
+  try {
+    const res = await fetch(`${LAB_STATUS_ORIGIN}/api/status`, { cache: "no-store" })
+    if (!res.ok) return
+    const entries = await res.json()
+    labStatusBySlug = Object.fromEntries((entries || []).map((e) => [e.slug, e.live]))
+  } catch (err) {
+    return // term.egolab.top unreachable — badges just stay hidden
+  }
+  const section = window.location.hash.startsWith("#/") ? window.location.hash.slice(2).split("/")[0] : ""
+  if (section === "project") renderSection("project")
+}
+
+function renderLabBadge(item) {
+  if (!item.web) return ""
+  const live = labStatusBySlug[item.slug]
+  if (live === undefined) return ""
+  return live
+    ? `<span class="lab-badge lab-badge-live">● live</span>`
+    : `<span class="lab-badge lab-badge-down">● down</span>`
+}
+
+/* ============================================
+   Command palette (Ctrl+K / Cmd+K)
+   ============================================ */
+function cmdkCommands() {
+  return [
+    { label: "Home", hint: "go", action: () => navigateTo("") },
+    { label: "Experience", hint: "go", action: () => navigateTo("experience") },
+    { label: "Projects", hint: "go", action: () => navigateTo("project") },
+    { label: "Posts", hint: "go", action: () => navigateTo("post") },
+    { label: "CTF Writeups", hint: "go", action: () => navigateTo("ctf") },
+    { label: "Education", hint: "go", action: () => navigateTo("education") },
+    { label: "Download CV", hint: "open", action: () => window.open("assets/cv/Indraswara-CV.pdf", "_blank") },
+    { label: "SSH into the lab", hint: "copy", action: () => cmdkCopy("ssh -o ProxyCommand=\"cloudflared access tcp --hostname ssh.egolab.top\" guest@ssh.egolab.top") },
+    { label: "Toggle dark mode", hint: "do", action: () => document.querySelector(".theme-toggle")?.click() },
+    { label: "GitHub", hint: "open", action: () => window.open("https://github.com/indraswara", "_blank") },
+  ]
+}
+
+function cmdkCopy(text) {
+  navigator.clipboard?.writeText(text).catch(() => {})
+}
+
+let cmdkSelected = 0
+let cmdkFiltered = []
+
+function cmdkOpen() {
+  const overlay = document.getElementById("cmdk-overlay")
+  const input = document.getElementById("cmdk-input")
+  if (!overlay || !input) return
+  overlay.hidden = false
+  input.value = ""
+  cmdkSelected = 0
+  cmdkRender("")
+  input.focus()
+}
+
+function cmdkClose() {
+  const overlay = document.getElementById("cmdk-overlay")
+  if (overlay) overlay.hidden = true
+}
+
+function cmdkRender(query) {
+  const list = document.getElementById("cmdk-list")
+  if (!list) return
+  const q = query.trim().toLowerCase()
+  cmdkFiltered = cmdkCommands().filter((c) => c.label.toLowerCase().includes(q))
+  cmdkSelected = Math.min(cmdkSelected, Math.max(cmdkFiltered.length - 1, 0))
+  list.innerHTML = cmdkFiltered
+    .map((c, i) => `<li class="cmdk-item${i === cmdkSelected ? " active" : ""}" data-index="${i}"><span>${c.label}</span><span class="cmdk-hint">${c.hint}</span></li>`)
+    .join("")
+}
+
+function initCommandPalette() {
+  const overlay = document.getElementById("cmdk-overlay")
+  const input = document.getElementById("cmdk-input")
+  const list = document.getElementById("cmdk-list")
+  if (!overlay || !input || !list) return
+
+  document.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault()
+      overlay.hidden ? cmdkOpen() : cmdkClose()
+      return
+    }
+    if (overlay.hidden) return
+    if (e.key === "Escape") {
+      cmdkClose()
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault()
+      cmdkSelected = Math.min(cmdkSelected + 1, cmdkFiltered.length - 1)
+      cmdkRender(input.value)
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      cmdkSelected = Math.max(cmdkSelected - 1, 0)
+      cmdkRender(input.value)
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      const cmd = cmdkFiltered[cmdkSelected]
+      if (cmd) {
+        cmdkClose()
+        cmd.action()
+      }
+    }
+  })
+
+  input.addEventListener("input", () => cmdkRender(input.value))
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) cmdkClose()
+  })
+  list.addEventListener("click", (e) => {
+    const item = e.target.closest(".cmdk-item")
+    if (!item) return
+    const cmd = cmdkFiltered[Number(item.dataset.index)]
+    if (cmd) {
+      cmdkClose()
+      cmd.action()
+    }
+  })
+}
+
+/* ============================================
+   Hero terminal — a live xterm.js session wired to
+   the same wish/bubbletea backend real SSH clients get
+   (see terminal/internal/webbridge). One session per
+   page view; torn down when navigating away from home.
+   ============================================ */
+let heroTerm = null
+let heroWs = null
+let heroFit = null
+let heroResizeHandler = null
+
+function heroWsURL(cols, rows) {
+  const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1"
+  const base = isLocal ? `ws://${location.hostname}:8091/ws` : "wss://term.egolab.top/ws"
+  return `${base}?cols=${cols}&rows=${rows}`
+}
+
+function disposeHeroTerminal() {
+  if (heroResizeHandler) {
+    window.removeEventListener("resize", heroResizeHandler)
+    heroResizeHandler = null
+  }
+  if (heroWs) {
+    heroWs.onclose = null
+    heroWs.close()
+    heroWs = null
+  }
+  if (heroTerm) {
+    heroTerm.dispose()
+    heroTerm = null
+  }
+  heroFit = null
+}
+
+function initHeroTerminal() {
+  disposeHeroTerminal()
+  const el = document.getElementById("hero-terminal")
+  if (!el || typeof Terminal === "undefined") return
+
+  const term = new Terminal({
+    convertEol: true,
+    fontFamily: "var(--font-mono)",
+    fontSize: 13,
+    theme: { background: "#0d1117", foreground: "#c9d1d9", cursor: "#3fb950" },
+  })
+  const fit = new FitAddon.FitAddon()
+  term.loadAddon(fit)
+  term.open(el)
+  fit.fit()
+  heroTerm = term
+  heroFit = fit
+
+  let ws
+  try {
+    // The terminal is already fitted to its final size at this point, so
+    // its size rides along in the connect URL — the server's very first
+    // frame renders at the right size instead of a fallback that gets
+    // resized (and re-rendered) moments later.
+    ws = new WebSocket(heroWsURL(term.cols, term.rows))
+  } catch (err) {
+    term.write("\r\nlab terminal unavailable\r\n")
+    return
+  }
+  ws.binaryType = "arraybuffer"
+  heroWs = ws
+  ws.onmessage = (event) => {
+    const data = event.data instanceof ArrayBuffer ? new Uint8Array(event.data) : event.data
+    term.write(data)
+  }
+  ws.onclose = () => {
+    term.write("\r\n\r\n[connection closed]\r\n")
+  }
+  ws.onerror = () => {
+    term.write("\r\nlab terminal unavailable — try again shortly\r\n")
+  }
+
+  term.onData((data) => {
+    if (ws.readyState === WebSocket.OPEN) ws.send(data)
+  })
+
+  heroResizeHandler = () => {
+    const prevCols = term.cols
+    const prevRows = term.rows
+    fit.fit()
+    if ((term.cols !== prevCols || term.rows !== prevRows) && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "resize", cols: term.cols, rows: term.rows }))
+      term.clear() // avoid a stray leftover line from the pre-resize frame
+    }
+  }
+  window.addEventListener("resize", heroResizeHandler)
+}
+
+function renderLabAction(item) {
+  const parts = []
+  if (item.web) {
+    parts.push(`<a class="btn secondary" href="https://${item.web.subdomain}.egolab.top" target="_blank" rel="noopener noreferrer">Try it live &rarr;</a>`)
+  }
+  if (item.site) {
+    parts.push(`<a class="btn secondary" data-route="${item.site}">Try it on this page &rarr;</a>`)
+  }
+  if (item.lab) {
+    parts.push(`<span class="lab-hint">run <code>${item.lab.cmd}</code> in the <a href="https://egolab.top" target="_blank" rel="noopener noreferrer">playground</a></span>`)
+  }
+  return parts.join(" ")
+}

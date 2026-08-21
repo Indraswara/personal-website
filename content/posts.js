@@ -29,4 +29,13 @@ window.POST_ENTRIES = [
     category: "article",
     contentPath: "posts/getting-started-with-docker.html",
   },
+  {
+    slug: "understanding-rest-apis",
+    title: "Understanding REST APIs",
+    date: "2025-09-22",
+    description: "A design checklist for building clean, predictable REST APIs.",
+    tags: ["API", "Backend", "Tutorial"],
+    category: "article",
+    contentPath: "posts/understanding-rest-apis.html",
+  },
 ]

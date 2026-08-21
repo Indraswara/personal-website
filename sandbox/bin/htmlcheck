@@ -1,0 +1,15 @@
+#!/bin/sh
+# HTML syntax validator (Pushdown Automaton). One-shot.
+# ConfigParser.py opens "pda.txt" relative to CWD, so we run from the lab dir.
+if [ -z "$1" ]; then
+  echo "usage: htmlcheck <file.html>"
+  echo
+  echo "sample inputs you can try (pass just the name):"
+  ls /opt/labs/html-checker/test | sed 's/^/  /'
+  exit 2
+fi
+in="$1"
+[ -f "$in" ] || in="/opt/labs/html-checker/test/$1"
+in="$(readlink -f "$in" 2>/dev/null || echo "$in")"
+cd /opt/labs/html-checker || exit 1
+exec python3 main.py pda.txt "$in"

@@ -1,0 +1,21 @@
+# dinasti-pak-lurah client ("dinasti.egolab.top") — WikiRace React front end,
+# built to static files and served by nginx (never the CRA dev server).
+# Build context MUST be the repo root:
+#   docker build -t egolab-dinasti-web:latest -f labs/dinasti-pak-lurah/Dockerfile.web .
+FROM node:20-bookworm AS build
+WORKDIR /app
+COPY projects/dinasti-pak-lurah/frontend/package.json projects/dinasti-pak-lurah/frontend/package-lock.json* ./
+RUN npm ci
+COPY projects/dinasti-pak-lurah/frontend/ ./
+# Fixes on top of the upstream checkout — see labs/dinasti-pak-lurah/overrides
+# (hardcoded localhost:3001 URLs, and a frontend-triggered call to the
+# backend's since-removed /CRASHTHISLMAO endpoint that fired after every
+# second search).
+COPY labs/dinasti-pak-lurah/overrides/frontend/Graph.js  ./src/Graph.js
+COPY labs/dinasti-pak-lurah/overrides/frontend/Search.js ./src/Search.js
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+COPY labs/dinasti-pak-lurah/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
