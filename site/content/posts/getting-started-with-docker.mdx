@@ -1,0 +1,29 @@
+---
+title: "Getting Started with Docker"
+date: "2025-11-07"
+description: "A beginner's guide to containerizing your applications with Docker."
+tags: ["Docker", "DevOps", "Tutorial"]
+category: "article"
+---
+
+Containers let you bundle an application, its runtime, and its dependencies into a portable unit.
+Docker is the de-facto toolkit for building and running those containers, which means learning the
+basics unlocks a workflow that behaves the same on your laptop, CI, or production.
+
+<Figure src="/posts/images/docker-diagram.svg" alt="Diagram describing Dockerfile to image to container flow" caption="A Dockerfile builds an image, and an image runs as a container." />
+
+### Core Concepts
+
+- **Image** – the template that holds your filesystem and metadata.
+- **Container** – a running instance of an image.
+- **Registry** – where images live so they can be shared.
+
+### Quick Start
+
+1. Install Docker Desktop or the Docker Engine package for your OS.
+2. Create a `Dockerfile` that describes how to build your image.
+3. Run `docker build -t my-app .` to create the image.
+4. Start a container with `docker run --rm -p 8080:80 my-app`.
+
+From here you can add multi-stage builds, use docker-compose for multi-service apps, and publish
+images to registries such as Docker Hub or GHCR.
