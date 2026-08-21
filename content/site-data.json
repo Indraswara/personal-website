@@ -2,6 +2,17 @@
   "$comment": "Experience/education timeline data for site/lib/siteData.ts. Moved out of site/lib/content.ts (TypeScript constants, baked in at build time) so admin.egolab.top can edit it at runtime without a rebuild — same reasoning as content/registry.json.",
   "experience": [
     {
+      "title": "Software Engineer",
+      "date": "01/2026 - present",
+      "description": "Work as software engineering for project based. Using various tech stack based on requirement",
+      "tags": [
+        "PHP",
+        "vite",
+        "node",
+        "golang"
+      ]
+    },
+    {
       "title": "Security Engineer",
       "date": "06/2025 - 12/2025",
       "description": "Developing a mobile scraper and some reverse engineering tasks for some ",
