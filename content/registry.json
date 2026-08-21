@@ -1,32 +1,58 @@
 {
-  "$comment": "CANONICAL project registry — single source of truth read by the website (fetched by app.js), the terminal backend (Go), and deploy scripts (jq). Add a project = add one object here + drop a folder in labs/<slug>/. See README.md 'Project Registry'.",
+  "$comment": "CANONICAL project registry — single source of truth read by the website (site/lib/registry.ts), the terminal backend (Go), and deploy scripts (jq). Add a project = add one object here + drop a folder in labs/<slug>/. See README.md 'Project Registry'. web.port is the HOST-loopback port used for cloudflared ingress (scripts/sync-cloudflared-ingress.sh) — it is NOT reachable from inside the terminal container (different network namespace), so the Go backend's /api/status liveness check instead dials web.checkHost:web.checkPort, the project's compose container_name + container-internal listen port on the shared egolab_edge Docker network.",
   "projects": [
     {
       "slug": "sepotipai",
       "title": "Sepotipai",
       "date": "2024",
       "description": "A Spotify-like playlist & queue manager written in C, exploring linked lists, queues, and file-backed persistence.",
-      "tags": ["C", "Data Structures", "CLI"],
+      "tags": [
+        "C",
+        "Data Structures",
+        "CLI"
+      ],
       "repo": "https://github.com/Indraswara/Sepotipai",
-      "lab": { "kind": "cli", "cmd": "sepotipai", "blurb": "Type START, then LIST / PLAY / QUEUE / HELP." }
+      "lab": {
+        "kind": "cli",
+        "cmd": "sepotipai",
+        "blurb": "Type START, then LIST / PLAY / QUEUE / HELP."
+      }
     },
     {
       "slug": "if2110-tb-02-i",
       "title": "BurBir",
       "date": "2023",
       "description": "A Twitter-like social app in C (users, tweets, replies, threads, friend graph) built on hand-rolled ADTs for the Algorithm & Data Structures course.",
-      "tags": ["C", "ADT", "Graph", "CLI"],
+      "tags": [
+        "C",
+        "ADT",
+        "Graph",
+        "CLI"
+      ],
       "repo": "https://github.com/Indraswara/IF2110_TB_02_I",
-      "lab": { "kind": "cli", "cmd": "burbir", "blurb": "Every input needs a trailing \";\" — just \";\" to load, then DAFTAR; to register, KICAU; to post." }
+      "lab": {
+        "kind": "cli",
+        "cmd": "burbir",
+        "blurb": "Every input needs a trailing \";\" — just \";\" to load, then DAFTAR; to register, KICAU; to post."
+      }
     },
     {
       "slug": "html-checker",
       "title": "HTML Checker",
       "date": "2023",
       "description": "Validates HTML syntax with a Pushdown Automaton derived from a context-free grammar — a Theory of Computation project.",
-      "tags": ["Python", "Automata", "CFG", "PDA"],
+      "tags": [
+        "Python",
+        "Automata",
+        "CFG",
+        "PDA"
+      ],
       "repo": "https://github.com/Indraswara/IF2124_HTML-Checker",
-      "lab": { "kind": "cli", "cmd": "htmlcheck", "blurb": "htmlcheck <file.html> — try the samples in test/." },
+      "lab": {
+        "kind": "cli",
+        "cmd": "htmlcheck",
+        "blurb": "htmlcheck <file.html> — try the samples in test/."
+      },
       "site": "html-checker"
     },
     {
@@ -34,70 +60,195 @@
       "title": "Digital Image Edges",
       "date": "2025",
       "description": "Classical edge-detection operators (Sobel, Prewitt, Roberts, Laplacian, LoG) — ported from the original MATLAB coursework to a headless Python CLI.",
-      "tags": ["Python", "NumPy", "Image Processing"],
+      "tags": [
+        "Python",
+        "NumPy",
+        "Image Processing"
+      ],
       "repo": "https://github.com/Indraswara/Tugas3_Citra-Digital",
-      "lab": { "kind": "cli", "cmd": "citra", "blurb": "citra edge <image> <sobel|prewitt|roberts|laplace|log>" }
+      "lab": {
+        "kind": "cli",
+        "cmd": "citra",
+        "blurb": "citra edge <image> <sobel|prewitt|roberts|laplace|log>"
+      }
+    },
+    {
+      "slug": "if2210-ngr",
+      "title": "CLI game",
+      "date": "2024",
+      "description": "A Stardew-Valley-style farming sim CLI game — planting, harvesting, and a shop, built in C++20 for the Strategi Algoritma course.",
+      "tags": [
+        "C++",
+        "OOP",
+        "CLI"
+      ],
+      "repo": "https://github.com/Indraswara/IF2210-NGR",
+      "lab": {
+        "kind": "cli",
+        "cmd": "ngr",
+        "blurb": "At the state prompt, type 1 for a fresh default game (or 2 then example/state.txt to load the seed save)."
+      }
     },
     {
       "slug": "if3110-tubes",
       "title": "LinkedIn Clone — Milestone 1",
       "date": "2024",
       "description": "A LinkedIn-style job platform built as vanilla PHP MVC on PostgreSQL: auth, profiles, job postings, and applications.",
-      "tags": ["PHP", "PostgreSQL", "MVC"],
+      "tags": [
+        "PHP",
+        "PostgreSQL",
+        "MVC"
+      ],
       "repo": "https://github.com/Indraswara/if3110-tubes-2024-k02-11",
-      "web": { "subdomain": "wbd", "port": 8100 }
+      "web": {
+        "subdomain": "wbd",
+        "port": 8100,
+        "checkHost": "egolab-if3110",
+        "checkPort": 80
+      }
     },
     {
       "slug": "algeo02",
       "title": "CBIR Image Retrieval",
       "date": "2023",
       "description": "Content-Based Image Retrieval using linear-algebra methods (color histograms + texture co-occurrence) with a React front end.",
-      "tags": ["Node.js", "TypeScript", "Linear Algebra", "React"],
+      "tags": [
+        "Node.js",
+        "TypeScript",
+        "Linear Algebra",
+        "React"
+      ],
       "repo": "https://github.com/Indraswara/Algeo02-22044",
-      "web": { "subdomain": "algeo", "port": 8101 }
+      "web": {
+        "subdomain": "algeo",
+        "port": 8101,
+        "checkHost": "egolab-algeo-web",
+        "checkPort": 80
+      }
     },
     {
       "slug": "dinasti-pak-lurah",
       "title": "WikiRace Solver",
       "date": "2024",
       "description": "Finds the shortest click-path between two Wikipedia articles with BFS and IDS, visualised as a graph. Go back end, React front end.",
-      "tags": ["Go", "React", "BFS", "IDS", "Graph"],
+      "tags": [
+        "Go",
+        "React",
+        "BFS",
+        "IDS",
+        "Graph"
+      ],
       "repo": "https://github.com/Indraswara/Tubes2_DinastiPakLurah",
-      "web": { "subdomain": "dinasti", "port": 8102 }
+      "web": {
+        "subdomain": "dinasti",
+        "port": 8102,
+        "checkHost": "egolab-dinasti-web",
+        "checkPort": 80
+      }
     },
     {
       "slug": "if3310-tubes",
       "title": "LinkedIn Clone — Milestone 2",
       "date": "2024",
       "description": "The milestone-1 platform rebuilt on a modern stack: Express + Prisma API, React/Vite front end, real-time chat over WebSockets, and web-push notifications.",
-      "tags": ["TypeScript", "Express", "Prisma", "React", "WebSocket"],
+      "tags": [
+        "TypeScript",
+        "Express",
+        "Prisma",
+        "React",
+        "WebSocket"
+      ],
       "repo": "https://github.com/Indraswara/if-3310-2024-2-k02-11",
-      "web": { "subdomain": "linkedin", "port": 8103 }
+      "web": {
+        "subdomain": "linkedin",
+        "port": 8103,
+        "checkHost": "egolab-if3310-web",
+        "checkPort": 80
+      }
     },
     {
       "slug": "riilcert",
       "title": "RiilCert",
       "date": "2025",
       "description": "Decentralized certificate issuance & verification on a Sepolia smart contract — wallet-signed auth, SHA-256 document hashing, AES encryption, and an immutable on-chain revoke/verify history.",
-      "tags": ["Solidity", "Next.js", "Ethers.js", "Blockchain"],
+      "tags": [
+        "Solidity",
+        "Next.js",
+        "Ethers.js",
+        "Blockchain"
+      ],
       "repo": "https://github.com/Intermaze/riilcert",
-      "web": { "subdomain": "riilcert", "port": 8104 }
+      "web": {
+        "subdomain": "riilcert",
+        "port": 8104,
+        "checkHost": "egolab-riilcert",
+        "checkPort": 3000
+      }
     },
     {
       "slug": "tubes1-kripto",
       "title": "SigmaChat",
       "date": "2025",
       "description": "End-to-end encrypted real-time chat: ECC P-256 signatures and symmetric encryption over WebSockets, Express + Drizzle/PostgreSQL backend.",
-      "tags": ["TypeScript", "ECC", "WebSocket", "Express", "Drizzle"],
+      "tags": [
+        "TypeScript",
+        "ECC",
+        "WebSocket",
+        "Express",
+        "Drizzle"
+      ],
       "repo": "https://github.com/Indraswara/Tubes1_kripto",
-      "web": { "subdomain": "sigmachat", "port": 8105 }
+      "web": {
+        "subdomain": "sigmachat",
+        "port": 8105,
+        "checkHost": "egolab-sigmachat-web",
+        "checkPort": 80
+      }
+    },
+    {
+      "slug": "kds",
+      "title": "Predator-Prey ABM",
+      "date": "2025",
+      "description": "Agent-based model of predator-prey population dynamics on a toroidal grid ocean — ported from a matplotlib desktop app to a headless server + canvas replay.",
+      "tags": [
+        "Python",
+        "Agent-Based Modeling",
+        "Simulation",
+        "FastAPI"
+      ],
+      "repo": "https://github.com/Indraswara/kds",
+      "web": {
+        "subdomain": "kds",
+        "port": 8107,
+        "checkHost": "egolab-kds",
+        "checkPort": 80
+      }
+    },
+    {
+      "slug": "os-2024-lostonesweeping",
+      "title": "LostOnesWeeping OS",
+      "date": "2024",
+      "description": "A bare-metal x86 OS from scratch — bootloader, kernel, FAT32 filesystem, and a userspace shell (ls, cat, mkdir, ps, exec) — for the Operating Systems course. Boots for real, in QEMU, from the SSH/playground menu — select \"Launch OS\".",
+      "tags": [
+        "C",
+        "x86 Assembly",
+        "OS Dev",
+        "FAT32"
+      ],
+      "repo": "https://github.com/Indraswara/os-2024-lostonesweeping"
     },
     {
       "slug": "personal-website",
       "title": "This Website",
       "date": "2024",
       "description": "The site you're on — a hand-written vanilla SPA turned into an SSH-able lab you can drop into over the terminal above.",
-      "tags": ["HTML", "CSS", "JavaScript", "Docker", "Go"],
+      "tags": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Docker",
+        "Go"
+      ],
       "repo": "https://github.com/Indraswara/personal-website"
     }
   ]
