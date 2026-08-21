@@ -1,0 +1,10 @@
+#!/bin/sh
+# Run the binary from the read-only image (tmpfs $HOME is mounted noexec), but
+# cd into a writable dir so the "Lokasi state file:" prompt can read the
+# seeded example/ files and any save-state writes resolve relative to cwd.
+d="$HOME/ngr"
+if [ ! -d "$d/example" ]; then
+  mkdir -p "$d/example"
+  cp /opt/labs/ngr/example/* "$d/example/" 2>/dev/null || true
+fi
+cd "$d" && exec /opt/labs/ngr/main

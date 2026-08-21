@@ -1,7 +1,7 @@
 # Unified compose file — local dev AND production (manual deploy, no CI).
 #
 # Services:
-#   web         nginx serving the static portfolio (egolab.top)
+#   web         Next.js portfolio/lab site, standalone build (egolab.top)
 #   terminal    Go backend: real SSH (wish) + web-terminal (WS) + sandbox orchestrator
 #
 # cloudflared is NOT a service here — this box already runs it as a host
@@ -16,13 +16,31 @@
 
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: site/Dockerfile
     container_name: egolab-web
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8090:80"
+      - "127.0.0.1:8090:3000"
+    environment:
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:?set REVALIDATE_SECRET in .env}
+    volumes:
+      # Read-only mounts of exactly what admin.egolab.top can edit — they
+      # overlay the image's own baked-in copies, so an admin write shows up
+      # here without a rebuild (revalidate=60 on each page still applies on
+      # top of that; admin also calls /api/revalidate for an instant publish).
+      - ./site/content/posts:/app/site/content/posts:ro
+      - ./site/content/ctf:/app/site/content/ctf:ro
+      - ./content/registry.json:/app/site/content/registry.json:ro
+      - ./content/site-data.json:/app/site/content/site-data.json:ro
     networks:
       - edge
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512m
 
   terminal:
     build: ./terminal
@@ -32,6 +50,7 @@ services:
       - "127.0.0.1:8091:8080" # HTTP/WS bridge for the web terminal — reachable via term.egolab.top
     environment:
       SANDBOX_IMAGE: egolab-sandbox:latest
+      OS_IMAGE: egolab-os:latest
       SANDBOX_NETWORK: egolab_sandbox
       PROJECTS_DIR: /srv/projects
       DATA_DIR: /data
@@ -272,6 +291,77 @@ services:
           cpus: "0.25"
           memory: 64m
 
+  # Single container (no separate api/web split) — a static canvas frontend
+  # with no JS build step, served by the same FastAPI process as the
+  # /api/simulate endpoint. No database, no secrets.
+  kds:
+    build:
+      context: .
+      dockerfile: labs/kds/Dockerfile
+    container_name: egolab-kds
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8107:80"
+    networks:
+      - edge
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128m
+
+  # Read-only sidecar: the only container that joins NPM's own `npm_proxy`
+  # network (owned by /opt/app/homelab, not this repo) to TCP-check each
+  # tailnet-only self-hosted service (bin/tools/pdf/... .egolab.top), and
+  # strips everything except subdomain/online before answering. No published
+  # port — only `web` reaches it, server-side, over egolab_edge.
+  homelab-status:
+    build:
+      context: .
+      dockerfile: homelab-status/Dockerfile
+    container_name: egolab-homelab-status
+    restart: unless-stopped
+    networks:
+      - edge
+      - homelab_npm_proxy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 32m
+
+  # admin.egolab.top — the CMS. Gated by Cloudflare Access at the edge
+  # *and* independently by admin/proxy.ts verifying the Access JWT itself
+  # (fails closed if CF_ACCESS_TEAM_DOMAIN/CF_ACCESS_AUD aren't set — see
+  # that file). Bind-mounts the real working tree (rw) rather than a Docker
+  # volume: it commits+pushes against actual git history, and every other
+  # consumer of content/registry.json etc. needs to see the exact same
+  # files admin just wrote, with no extra sync step.
+  admin:
+    build:
+      context: .
+      dockerfile: admin/Dockerfile
+    container_name: egolab-admin
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8108:3000"
+    environment:
+      CF_ACCESS_TEAM_DOMAIN: ${CF_ACCESS_TEAM_DOMAIN:-ego-lab}
+      CF_ACCESS_AUD: ${CF_ACCESS_AUD:?set CF_ACCESS_AUD in .env once the Access Application exists — proxy.ts fails closed without it, so it's safe to deploy before this is set}
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:?set REVALIDATE_SECRET in .env}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:?set GITHUB_TOKEN in .env}
+      GIT_USER_NAME: ${GIT_USER_NAME:-Indraswara}
+      GIT_USER_EMAIL: ${GIT_USER_EMAIL:-indrswara@gmail.com}
+    volumes:
+      - .:/repo
+    networks:
+      - edge
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256m
+
 volumes:
   terminal_data:
   if3110_uploads:
@@ -287,6 +377,9 @@ networks:
     internal: true # ephemeral playground containers live here — NO internet egress, ever
   homelab_db:
     name: homelab_homelab_internal # pre-existing network owned by /opt/app/homelab — not ours to create/destroy
+    external: true
+  homelab_npm_proxy:
+    name: npm_proxy # pre-existing network owned by /opt/app/homelab's Nginx Proxy Manager — not ours to create/destroy
     external: true
   algeo_internal:
     name: egolab_algeo_internal # algeo-web <-> algeo-api only; algeo-api has no host-published port

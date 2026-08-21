@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Predator-Prey ABM — kds.egolab.top</title>
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Predator-Prey Ecosystem Simulation</h1>
+    <p class="sub">
+      Agent-based model of a toroidal 2D ocean grid — prey graze, reproduce, and flee; predators hunt,
+      reproduce, and starve. Ported from a matplotlib desktop app to run headless server-side, then
+      replayed here frame by frame.
+      <a href="https://github.com/Indraswara/kds" target="_blank" rel="noopener">source</a>
+    </p>
+  </header>
+
+  <main>
+    <section class="panel" id="params-panel">
+      <h2>Parameters</h2>
+      <form id="params-form">
+        <label>Grid size <input type="number" name="grid_size" value="30" min="5" max="40" /></label>
+        <label>Initial prey <input type="number" name="initial_prey" value="40" min="0" max="300" /></label>
+        <label>Initial predators <input type="number" name="initial_predators" value="8" min="0" max="100" /></label>
+        <label>Prey reproduce interval <input type="number" name="prey_reproduce_interval" value="5" min="1" max="50" /></label>
+        <label>Predator reproduce interval <input type="number" name="predator_reproduce_interval" value="8" min="1" max="50" /></label>
+        <label>Predator initial energy <input type="number" name="predator_initial_energy" value="20" min="1" max="200" /></label>
+        <label>Energy gained per kill <input type="number" name="energy_gain" value="10" min="0" max="200" /></label>
+        <label>Energy lost per step <input type="number" name="energy_loss" value="2" min="0" max="100" /></label>
+        <label>Max steps <input type="number" name="max_steps" value="100" min="1" max="200" /></label>
+        <label>Food density <input type="number" name="food_density" value="0.1" min="0" max="0.3" step="0.01" /></label>
+        <button type="submit" id="run-btn">Run simulation</button>
+      </form>
+      <p id="status"></p>
+    </section>
+
+    <section class="panel" id="view-panel">
+      <canvas id="grid" width="560" height="560"></canvas>
+      <div class="controls">
+        <button id="btn-first" disabled>|&lt;</button>
+        <button id="btn-prev" disabled>&lt;</button>
+        <button id="btn-play" disabled>&#9654;</button>
+        <button id="btn-next" disabled>&gt;</button>
+        <button id="btn-last" disabled>&gt;|</button>
+        <span id="step-label">step 0 / 0</span>
+      </div>
+      <div class="legend">
+        <span><i class="dot prey"></i> prey</span>
+        <span><i class="dot predator"></i> predator</span>
+        <span><i class="dot food"></i> food</span>
+      </div>
+      <dl id="stats"></dl>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

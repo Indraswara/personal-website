@@ -21,6 +21,7 @@ type Action int
 const (
 	ActionNone Action = iota
 	ActionPlayground
+	ActionOS
 	ActionExit
 )
 
@@ -78,6 +79,7 @@ func New(reg *registry.Registry, sshHost string, width int) Model {
 			{"Projects", screenProjects, ActionNone},
 			{"Download CV (scp)", screenCV, ActionNone},
 			{"Enter playground", screenMenu, ActionPlayground},
+			{"Launch OS (QEMU, boots fresh each time)", screenMenu, ActionOS},
 			{"Exit", screenMenu, ActionExit},
 		},
 	}
@@ -97,7 +99,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			if m.cur != screenMenu {
 				m.cur = screenMenu
-				return m, nil
+				// Sub-screens vary in line count (Projects is taller than
+				// About, etc.) — the default renderer only clears trailing
+				// lines it remembers from the previous frame, so a shorter
+				// redraw can leave stray lines from a taller one behind.
+				// Force a full repaint instead of relying on that diff.
+				return m, tea.ClearScreen
 			}
 			m.Action = ActionExit
 			m.quitting = true
@@ -105,6 +112,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "esc":
 			if m.cur != screenMenu {
 				m.cur = screenMenu
+				return m, tea.ClearScreen
 			}
 			return m, nil
 		case "up", "k":

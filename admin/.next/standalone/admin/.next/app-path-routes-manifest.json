@@ -1,0 +1,14 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/ctf/[slug]/page": "/ctf/[slug]",
+  "/ctf/new/page": "/ctf/new",
+  "/ctf/page": "/ctf",
+  "/education/page": "/education",
+  "/experience/page": "/experience",
+  "/page": "/",
+  "/posts/[slug]/page": "/posts/[slug]",
+  "/posts/new/page": "/posts/new",
+  "/posts/page": "/posts",
+  "/projects/page": "/projects"
+}

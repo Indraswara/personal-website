@@ -18,6 +18,9 @@ echo "==> Syncing project repos (labs + subdomains)"
 echo "==> Building sandbox playground image"
 docker build -t egolab-sandbox:latest -f sandbox/Dockerfile .
 
+echo "==> Building OS (QEMU) playground image"
+docker build -t egolab-os:latest -f os/Dockerfile .
+
 echo "==> Building and starting core services (web, terminal)"
 docker compose -f compose.yml up -d --build
 

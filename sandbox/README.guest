@@ -14,6 +14,9 @@ Project demos (type the command):
                          Samples live in /opt/labs/html-checker/test/.
   citra edge <img> <op>  Edge detection. op = sobel|prewitt|roberts|laplace|log.
                          Sample images in /opt/labs/citra-digital/samples/.
+  ngr                    Farming-sim CLI game, in C++20. At the state prompt
+                         type 1 for a fresh default game, or 2 then
+                         example/state.txt to load the seeded save.
 
 Browse the source of every project (read-only):
   ls /srv/projects

@@ -14,6 +14,8 @@
                           ";" — e.g. just ";" to load, "DAFTAR;" to sign up)
     htmlcheck <file>     validate HTML via a Pushdown Automaton (Python)
     citra edge <img> <op>  edge detection: sobel|prewitt|roberts|laplace|log
+    ngr                  farming-sim CLI game (C++20) — type 1 for a fresh
+                          game at the state prompt
 
   GETTING AROUND
     labs                 show this menu again

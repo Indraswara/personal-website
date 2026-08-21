@@ -1,0 +1,14 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/ctf/[slug]/page": "app/ctf/[slug]/page.js",
+  "/ctf/new/page": "app/ctf/new/page.js",
+  "/ctf/page": "app/ctf/page.js",
+  "/education/page": "app/education/page.js",
+  "/experience/page": "app/experience/page.js",
+  "/page": "app/page.js",
+  "/posts/[slug]/page": "app/posts/[slug]/page.js",
+  "/posts/new/page": "app/posts/new/page.js",
+  "/posts/page": "app/posts/page.js",
+  "/projects/page": "app/projects/page.js"
+}

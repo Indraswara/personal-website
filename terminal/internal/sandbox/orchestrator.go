@@ -23,25 +23,74 @@ type Winsize struct {
 	Rows int
 }
 
+// Config holds the concerns shared across every program the orchestrator can
+// run: which Docker network isolates them, and the global session-count
+// limiter. What actually runs — image, argv, resource caps — is a Program.
 type Config struct {
-	Image         string
 	Network       string
-	SessionCap    time.Duration // hard ceiling on a single playground session
-	IdleTimeout   time.Duration // kill if no I/O activity for this long
 	MaxConcurrent int
 	PerIPMax      int
 	PerIPWindow   time.Duration
 }
 
-func DefaultConfig(image, network string) Config {
+func DefaultConfig(network string) Config {
 	return Config{
-		Image:         image,
 		Network:       network,
-		SessionCap:    10 * time.Minute,
-		IdleTimeout:   3 * time.Minute,
 		MaxConcurrent: 8,
 		PerIPMax:      4,
 		PerIPWindow:   10 * time.Minute,
+	}
+}
+
+// Program is one thing the orchestrator can run in an ephemeral container:
+// its image, the argv appended after the image (empty = run the image's own
+// CMD), and its resource profile. Name must be unique among programs that
+// can run concurrently in the same SSH session — it's part of the container
+// name, so two programs sharing a Name would collide mid-session.
+type Program struct {
+	Name        string
+	Image       string
+	Argv        []string
+	Memory      string // e.g. "128m", passed straight to `docker run --memory`
+	CPUs        string // e.g. "0.5"
+	PidsLimit   int
+	TmpfsSize   string // size of the /home/guest tmpfs, e.g. "64m"
+	SessionCap  time.Duration
+	IdleTimeout time.Duration
+}
+
+// PlaygroundProgram is the original single-profile playground: a plain
+// shell in the sandbox image, values unchanged from before this type existed.
+func PlaygroundProgram(image string) Program {
+	return Program{
+		Name:        "playground",
+		Image:       image,
+		Memory:      "128m",
+		CPUs:        "0.5",
+		PidsLimit:   64,
+		TmpfsSize:   "64m",
+		SessionCap:  10 * time.Minute,
+		IdleTimeout: 3 * time.Minute,
+	}
+}
+
+// OSProgram boots the ephemeral hobby-OS instance under QEMU (TCG, no
+// /dev/kvm — slower than KVM but keeps the same no-extra-devices isolation
+// as every other program here). Memory/CPU are higher than the plain shell
+// playground because QEMU itself, not just the guest OS, needs headroom.
+// SessionCap is deliberately much shorter than the playground's — QEMU pegs
+// a full CPU core even idling (measured via `docker stats`), too heavy on
+// this box to let run for a full 10 minutes per session.
+func OSProgram(image string) Program {
+	return Program{
+		Name:        "os",
+		Image:       image,
+		Memory:      "256m",
+		CPUs:        "1.0",
+		PidsLimit:   96,
+		TmpfsSize:   "48m",
+		SessionCap:  1 * time.Minute,
+		IdleTimeout: 1 * time.Minute,
 	}
 }
 
@@ -60,12 +109,12 @@ func New(cfg Config) *Orchestrator {
 	}
 }
 
-// Attach runs one sandbox container with stdio wired to rw, and blocks until
-// the session ends (container exits, the hard cap fires, or it goes idle).
-// remoteIP and sessionID are used for rate limiting and container naming.
-// resize (optional, may be nil) delivers terminal size changes for the
-// container's own PTY.
-func (o *Orchestrator) Attach(ctx context.Context, rw io.ReadWriter, wantPTY bool, term string, resize <-chan Winsize, remoteIP, sessionID string) error {
+// Attach runs one program's container with stdio wired to rw, and blocks
+// until the session ends (container exits, the hard cap fires, or it goes
+// idle). remoteIP and sessionID are used for rate limiting and container
+// naming. resize (optional, may be nil) delivers terminal size changes for
+// the container's own PTY.
+func (o *Orchestrator) Attach(ctx context.Context, rw io.ReadWriter, wantPTY bool, term string, resize <-chan Winsize, remoteIP, sessionID string, prog Program) error {
 	release, ok, reason := o.limiter.Acquire(remoteIP)
 	if !ok {
 		fmt.Fprintf(rw, "\r\n[playground] %s\r\n", reason)
@@ -86,13 +135,13 @@ func (o *Orchestrator) Attach(ctx context.Context, rw io.ReadWriter, wantPTY boo
 	if base.Err() != nil {
 		base = context.Background()
 	}
-	ctx, cancel := context.WithTimeout(base, o.cfg.SessionCap)
+	ctx, cancel := context.WithTimeout(base, prog.SessionCap)
 	defer cancel()
 
 	activity := &activityIO{ReadWriter: rw}
 	activity.touch()
 
-	containerName := "egolab-sbx-" + nameSanitizer.ReplaceAllString(sessionID, "")
+	containerName := "egolab-sbx-" + prog.Name + "-" + nameSanitizer.ReplaceAllString(sessionID, "")
 
 	args := []string{"run", "--rm", "-i"}
 	if wantPTY {
@@ -101,10 +150,10 @@ func (o *Orchestrator) Attach(ctx context.Context, rw io.ReadWriter, wantPTY boo
 	args = append(args,
 		"--network", o.cfg.Network,
 		"--read-only",
-		"--tmpfs", "/home/guest:rw,uid=1000,mode=0700,size=64m",
-		"--memory=128m",
-		"--cpus=0.5",
-		"--pids-limit=64",
+		"--tmpfs", fmt.Sprintf("/home/guest:rw,uid=1000,mode=0700,size=%s", prog.TmpfsSize),
+		"--memory="+prog.Memory,
+		"--cpus="+prog.CPUs,
+		fmt.Sprintf("--pids-limit=%d", prog.PidsLimit),
 		"--cap-drop=ALL",
 		"--security-opt", "no-new-privileges",
 		"--name", containerName,
@@ -113,7 +162,8 @@ func (o *Orchestrator) Attach(ctx context.Context, rw io.ReadWriter, wantPTY boo
 	if term != "" {
 		args = append(args, "-e", "TERM="+term)
 	}
-	args = append(args, o.cfg.Image)
+	args = append(args, prog.Image)
+	args = append(args, prog.Argv...)
 
 	cmd := exec.CommandContext(ctx, "docker", args...)
 
@@ -123,7 +173,7 @@ func (o *Orchestrator) Attach(ctx context.Context, rw io.ReadWriter, wantPTY boo
 	// `docker kill` the container directly; --rm then reaps it.
 	done := make(chan struct{})
 	defer close(done)
-	go o.watchdog(ctx, done, activity, containerName)
+	go o.watchdog(ctx, done, activity, containerName, prog.IdleTimeout)
 
 	var runErr error
 	if wantPTY {
@@ -183,7 +233,7 @@ func (o *Orchestrator) Attach(ctx context.Context, rw io.ReadWriter, wantPTY boo
 	return runErr
 }
 
-func (o *Orchestrator) watchdog(ctx context.Context, done chan struct{}, activity *activityIO, containerName string) {
+func (o *Orchestrator) watchdog(ctx context.Context, done chan struct{}, activity *activityIO, containerName string, idleTimeout time.Duration) {
 	ticker := time.NewTicker(15 * time.Second)
 	defer ticker.Stop()
 	for {
@@ -194,7 +244,7 @@ func (o *Orchestrator) watchdog(ctx context.Context, done chan struct{}, activit
 			killContainer(containerName)
 			return
 		case <-ticker.C:
-			if time.Since(activity.lastActivity()) > o.cfg.IdleTimeout {
+			if time.Since(activity.lastActivity()) > idleTimeout {
 				killContainer(containerName)
 				return
 			}

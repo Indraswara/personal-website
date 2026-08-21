@@ -11,8 +11,13 @@ FROM gcc:13 AS build
 WORKDIR /build
 COPY projects/sepotipai        ./sepotipai
 COPY projects/if2110-tb-02-i   ./if2110
+COPY projects/if2210-ngr       ./ngr
 RUN cd sepotipai && make && test -x bin/main
 RUN cd if2110 && make .bin/program && test -x .bin/program
+# gcc:13's own libstdc++ is newer than debian:bookworm-slim's runtime one
+# (GLIBCXX_3.4.32 missing there) — statically link this one binary instead of
+# patching the upstream repo's Makefile or bumping the whole runtime image.
+RUN cd ngr && make build CCX="g++ -static-libstdc++ -static-libgcc" && test -x bin/main
 
 # ---- stage 2: minimal runtime ----
 FROM debian:bookworm-slim
@@ -33,6 +38,8 @@ COPY --from=build /build/if2110/.bin/program   /opt/labs/if2110/program
 # a missing-file path (format verified against simpan.c's SavingFile*: an
 # empty section is written as a bare "0", no newline).
 COPY sandbox/seed/burbir-config            /opt/labs/if2110/empty-config
+COPY --from=build /build/ngr/bin/main      /opt/labs/ngr/main
+COPY projects/if2210-ngr/example           /opt/labs/ngr/example
 
 # Python labs.
 COPY projects/html-checker/main.py         /opt/labs/html-checker/main.py

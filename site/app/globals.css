@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "@xterm/xterm/css/xterm.css";
+@import "katex/dist/katex.min.css";
+
+/* @xterm/xterm@6.0.0's own bundled xterm.css doesn't hide its internal
+   character-width measurement element (WidthCache, lib/xterm.js) — it's
+   created with aria-hidden="true" but no positioning/visibility rule, so the
+   raw calibration string ("q" repeated ~32x, chosen for its ascender +
+   descender) rendered visibly above every terminal instance. Confirmed via
+   a headless-browser DOM dump (.xterm-width-cache-measure-container), not
+   guessed — this is a real gap in the upstream stable release, not
+   something introduced by this port. */
+.xterm-width-cache-measure-container {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  visibility: hidden;
+}
+
+/* Terminal-lab palette. Dark is the primary, default identity of the site —
+   light exists but is deliberately the secondary mode (see plan: "terminal-
+   lab bold"). Values mirror the xterm theme already used by the terminal
+   components (#0d1117 bg / #c9d1d9 fg / #3fb950 cursor) so the embedded
+   terminal never looks like a different app pasted into the page. */
+:root {
+  --bg: #f6f8fa;
+  --bg-elevated: #ffffff;
+  --bg-inset: #eef1f4;
+  --fg: #1b1f24;
+  --fg-muted: #57606a;
+  --fg-subtle: #8b949e;
+  --border: #d0d7de;
+  --accent: #1a7f37;
+  --accent-fg: #ffffff;
+  --accent-amber: #9a6700;
+  --danger: #cf222e;
+  --shadow: 0 8px 24px rgba(140, 149, 159, 0.2);
+}
+
+:root[data-theme="dark"] {
+  --bg: #0d1117;
+  --bg-elevated: #161b22;
+  --bg-inset: #010409;
+  --fg: #c9d1d9;
+  --fg-muted: #8b949e;
+  --fg-subtle: #6e7681;
+  --border: #30363d;
+  --accent: #3fb950;
+  --accent-fg: #04220c;
+  --accent-amber: #d29922;
+  --danger: #f85149;
+  --shadow: 0 8px 24px rgba(1, 4, 9, 0.6);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-inset: var(--bg-inset);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-amber: var(--accent-amber);
+  --color-danger: var(--danger);
+  --font-mono: var(--font-mono-lab);
+}
+
+html {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-mono-lab), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-fg);
+}

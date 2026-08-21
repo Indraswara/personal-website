@@ -183,13 +183,20 @@ func handleStatus(w http.ResponseWriter, reg *registry.Registry) {
 	}
 	var out []statusEntry
 	for _, p := range reg.WithWeb() {
-		out = append(out, statusEntry{Slug: p.Slug, Live: tcpAlive(p.Web.Port)})
+		out = append(out, statusEntry{Slug: p.Slug, Live: tcpAlive(p.Web.CheckHost, p.Web.CheckPort)})
 	}
 	json.NewEncoder(w).Encode(out)
 }
 
-func tcpAlive(port int) bool {
-	addr := net.JoinHostPort("127.0.0.1", strconv.Itoa(port))
+// Dials the project's compose container_name on the shared egolab_edge
+// Docker network, not 127.0.0.1 — this process runs inside its own container,
+// so the host's loopback-bound published ports (cloudflared ingress targets)
+// are a different, unreachable network namespace from here.
+func tcpAlive(host string, port int) bool {
+	if host == "" || port == 0 {
+		return false
+	}
+	addr := net.JoinHostPort(host, strconv.Itoa(port))
 	c, err := net.DialTimeout("tcp", addr, 300*time.Millisecond)
 	if err != nil {
 		return false

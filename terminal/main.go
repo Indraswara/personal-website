@@ -27,6 +27,7 @@ func main() {
 	dataDir := env("DATA_DIR", "/data")
 	registryPath := env("REGISTRY_PATH", "/data/registry.json")
 	sandboxImage := env("SANDBOX_IMAGE", "egolab-sandbox:latest")
+	osImage := env("OS_IMAGE", "egolab-os:latest")
 	sandboxNetwork := env("SANDBOX_NETWORK", "egolab_sandbox")
 	sshAddr := env("SSH_ADDR", ":2022")
 	webAddr := env("WEB_ADDR", ":8080")
@@ -38,14 +39,23 @@ func main() {
 		reg = &registry.Registry{}
 	}
 
-	orch := sandbox.New(sandbox.DefaultConfig(sandboxImage, sandboxNetwork))
+	orch := sandbox.New(sandbox.DefaultConfig(sandboxNetwork))
+
+	// QEMU pegs a full CPU core even idling — 8 concurrent instances (the
+	// shared limiter's cap, sized for near-idle shells) would saturate a
+	// small VPS. Give it its own orchestrator with a much tighter cap.
+	osCfg := sandbox.DefaultConfig(sandboxNetwork)
+	osCfg.MaxConcurrent = 2
+	osOrch := sandbox.New(osCfg)
 
 	sshSrv, err := sshserver.New(sshserver.Config{
-		Addr:    sshAddr,
-		HostKey: filepath.Join(dataDir, "ssh_host_ed25519_key"),
-		SSHHost: sshHost,
-		CVDir:   env("CV_DIR", "/data/cv"),
-	}, reg, orch)
+		Addr:         sshAddr,
+		HostKey:      filepath.Join(dataDir, "ssh_host_ed25519_key"),
+		SSHHost:      sshHost,
+		CVDir:        env("CV_DIR", "/data/cv"),
+		SandboxImage: sandboxImage,
+		OSImage:      osImage,
+	}, reg, orch, osOrch)
 	if err != nil {
 		log.Fatalf("ssh server: %v", err)
 	}

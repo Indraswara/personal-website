@@ -1,0 +1,16 @@
+{
+  "node": {
+    "603de527a56d3f4b62c3678a5738c650c35bb298a3": {
+      "workers": {
+        "app/education/page": {
+          "moduleId": 14597,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "saveTimeline",
+      "filename": "admin/lib/actions.ts"
+    }
+  },
+  "edge": {}
+}

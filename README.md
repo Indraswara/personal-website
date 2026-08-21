@@ -51,10 +51,23 @@ first. Nothing you do there persists. From inside:
 | `burbir` | Twitter-like social app (C, hand-rolled ADTs). Every input needs a trailing `;` — just `;` to load, then `DAFTAR;` to register, `KICAU;` to post. |
 | `htmlcheck <file>` | Same HTML validator as the on-site checker. Run with no args to see sample files. |
 | `citra edge <img> <op>` | Edge detection (`sobel`\|`prewitt`\|`roberts`\|`laplace`\|`log`) on sample images. |
+| `ngr` | Farming-sim CLI game (C++20). At the state prompt, type `1` for a fresh game or `2` then `example/state.txt` to load the seeded save. |
 | `labs` | Show this menu again |
 | `ls /srv/projects` | Browse the read-only source of every project |
 | `cat ~/README` | Quick reference, same as this table |
 | `exit` | Leave the playground, back to the SSH menu |
+
+### The OS (QEMU)
+
+Selecting **Launch OS** from the top-level menu boots
+[`os-2024-lostonesweeping`](https://github.com/Indraswara/os-2024-lostonesweeping) — a real bare-metal
+x86 OS (bootloader, kernel, FAT32 filesystem, userspace shell) — for real, under `qemu-system-i386`
+(software emulation, no `/dev/kvm`), in its own ephemeral container with the same hardening as the
+playground plus a tighter concurrency cap (QEMU holds a full CPU core even idling, unlike a plain shell).
+Fresh disk every boot; nothing persists once you leave.
+
+The OS itself has no exit command, so leaving means talking to QEMU directly: press **Alt+2** to switch to
+the QEMU monitor, then type `quit` and Enter. You're dropped back at the SSH menu, same as playground `exit`.
 
 ### The web projects
 

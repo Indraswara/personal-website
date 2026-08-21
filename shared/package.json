@@ -1,0 +1,12 @@
+{
+  "name": "@egolab/shared",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Plain source shared between site/ and admin/ (Docker context = repo root, each app's Dockerfile COPYs this in). Has its own node_modules so bundler resolution — which walks up from the importing file — finds these packages without site/ or admin/ needing to declare them too.",
+  "dependencies": {
+    "rehype-katex": "^7.0.1",
+    "rehype-pretty-code": "^0.14.5",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0"
+  }
+}

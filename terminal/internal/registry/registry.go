@@ -10,7 +10,9 @@ import (
 
 type Web struct {
 	Subdomain string `json:"subdomain"`
-	Port      int    `json:"port"`
+	Port      int    `json:"port"` // host-loopback port for cloudflared ingress — NOT reachable from inside this container, don't dial it for liveness
+	CheckHost string `json:"checkHost"` // compose container_name on egolab_edge, used for the /api/status liveness check instead
+	CheckPort int    `json:"checkPort"` // container-internal listen port (not the same number space as Port)
 }
 
 type Lab struct {

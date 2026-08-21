@@ -1,0 +1,71 @@
+{
+  "$comment": "Homelab service directory for site/app/homelab/page.tsx. These are self-hosted apps reverse-proxied by this VPS's Nginx Proxy Manager (outside this repo, see /opt/app/homelab) and reachable only over Tailscale — no public port. Cross-referenced against `docker ps` on 2026-08-21, not just NPM's saved config (two stale entries, vault.egolab.top and n8n.egolab.top, had no running container behind them and were dropped). Live online/offline status is supplied separately by the homelab-status sidecar, matched to entries here by `subdomain`.",
+  "services": [
+    {
+      "subdomain": "gitea.egolab.top",
+      "name": "Gitea",
+      "description": "Lightweight self-hosted Git service — repo hosting, issues, PRs.",
+      "category": "Dev"
+    },
+    {
+      "subdomain": "portainer.egolab.top",
+      "name": "Portainer",
+      "description": "Web UI for managing this box's Docker containers, images, and volumes.",
+      "category": "Ops"
+    },
+    {
+      "subdomain": "db.egolab.top",
+      "name": "Adminer",
+      "description": "Single-file database admin UI for the shared Postgres/MySQL/MariaDB instances.",
+      "category": "Ops"
+    },
+    {
+      "subdomain": "s3.egolab.top",
+      "name": "MinIO",
+      "description": "Self-hosted, S3-compatible object storage.",
+      "category": "Ops"
+    },
+    {
+      "subdomain": "nocodb.egolab.top",
+      "name": "NocoDB",
+      "description": "Turns a plain SQL database into a spreadsheet-like no-code UI.",
+      "category": "Automation"
+    },
+    {
+      "subdomain": "tools.egolab.top",
+      "name": "IT-Tools",
+      "description": "A grab-bag of everyday dev utilities — JSON formatting, JWT decoding, hash generators, and more.",
+      "category": "Utilities"
+    },
+    {
+      "subdomain": "pdf.egolab.top",
+      "name": "Stirling-PDF",
+      "description": "Self-hosted PDF toolkit — merge, split, convert, OCR.",
+      "category": "Utilities"
+    },
+    {
+      "subdomain": "bin.egolab.top",
+      "name": "PrivateBin",
+      "description": "Encrypted, zero-knowledge pastebin — the server never sees plaintext.",
+      "category": "Utilities"
+    },
+    {
+      "subdomain": "links.egolab.top",
+      "name": "Linkding",
+      "description": "Minimalist self-hosted bookmark manager.",
+      "category": "Notes"
+    },
+    {
+      "subdomain": "memos.egolab.top",
+      "name": "Memos",
+      "description": "Quick, privacy-first note-taking — a personal micro-blog.",
+      "category": "Notes"
+    },
+    {
+      "subdomain": "obsidian.egolab.top",
+      "name": "Obsidian Sync",
+      "description": "CouchDB backend for Obsidian LiveSync — notes synced across devices without a third-party service.",
+      "category": "Notes"
+    }
+  ]
+}
